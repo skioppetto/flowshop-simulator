@@ -29,4 +29,14 @@ public class Workstation {
       return Status.PROCESSING;
    }
 
+   public long process(long i) {
+      if (currentOperation.getProcessedTime() >= currentOperation.getCycleTime())
+         return 0l;
+      long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
+      currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());
+      if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime())
+         this.currentOperation = null;
+      return processTime;
+   }
+
 }

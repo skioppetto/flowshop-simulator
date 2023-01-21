@@ -18,7 +18,7 @@ public class WorkstationTest {
 
    void pushOperation() {
       Workstation wst = new Workstation();
-      Operation op = new Operation("opId");
+      Operation op = new Operation("opId", 100l);
       wst.setCurrentOperation(op);
       assertNotNull(wst.getCurrentOperation());
       assertEquals(op.getId(), wst.getCurrentOperation().getId());
@@ -31,12 +31,12 @@ public class WorkstationTest {
    void requiredOperators() {
       Workstation wst = new Workstation();
       assertEquals(0, wst.getRequiredOperators());
-      Operation op = new Operation("opId");
+      Operation op = new Operation("opId", 100l);
       op.setRequiredOperators(2);
       wst.setCurrentOperation(op);
       assertEquals(2, wst.getRequiredOperators());
 
-      Operation op1 = new Operation("opID2");
+      Operation op1 = new Operation("opID2", 100);
       op1.setRequiredOperators(3);
       wst.setCurrentOperation(op1);
       assertEquals(3, wst.getRequiredOperators());
@@ -84,7 +84,7 @@ public class WorkstationTest {
    void statusWaitForOperator() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId");
+      Operation op = new Operation("opId", 100l);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
@@ -97,7 +97,7 @@ public class WorkstationTest {
    void statusWaitForOpeatorLowerThanRequired() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId");
+      Operation op = new Operation("opId", 100l);
       op.setRequiredOperators(2);
       wst.setCurrentOperation(op);
       Operator operator = new Operator("idOperator");
@@ -111,7 +111,7 @@ public class WorkstationTest {
    void statusProcessing() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId");
+      Operation op = new Operation("opId", 100l);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       Operator operator = new Operator("idOperator");
@@ -124,7 +124,7 @@ public class WorkstationTest {
    void statusProcessingBackToWaitingForOperator() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId");
+      Operation op = new Operation("opId", 100l);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       Operator operator = new Operator("idOperator");
@@ -132,6 +132,22 @@ public class WorkstationTest {
       assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
       wst.getAssignedOperators().remove(operator);
       assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
+   }
+
+   @Test
+   void statusProcessingBackToIdle() {
+      Workstation wst = new Workstation();
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
+      Operation op = new Operation("opId", 100l);
+      op.setRequiredOperators(1);
+      wst.setCurrentOperation(op);
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
+      Operator operator = new Operator("idOperator");
+      wst.getAssignedOperators().add(operator);
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
+      wst.setCurrentOperation(null);
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
+
    }
 
    @Test
@@ -149,6 +165,71 @@ public class WorkstationTest {
       assertNull(operator.getAssignedWorkstation());
    }
 
-   // TODO: how can I remove an operation? In this case the status should go back
-   // to IDLE
+   @Test
+   // I can ask to a workstation to process some unit of time,
+   // it will work only in PROCESSING status
+   // the workstation will set some processed time to the operation, until there's
+   // no more time to process and the operation will be "released" and then the
+   // workstation will go to IDLE state
+   void processOperation() {
+      Workstation wst = new Workstation();
+      Operator operator = new Operator("idOperator");
+      wst.getAssignedOperators().add(operator);
+      Operation op = new Operation("opId", 100);
+      op.setRequiredOperators(1);
+      wst.setCurrentOperation(op);
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
+      long processedTime = wst.process(10);
+      assertEquals(10, processedTime);
+      assertEquals(10, op.getProcessedTime());
+   }
+
+   @Test
+   void processOperationMoreTimes() {
+      Workstation wst = new Workstation();
+      Operator operator = new Operator("idOperator");
+      wst.getAssignedOperators().add(operator);
+      Operation op = new Operation("opId", 100);
+      op.setRequiredOperators(1);
+      wst.setCurrentOperation(op);
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
+      long processedTime;
+      processedTime = wst.process(10);
+      assertEquals(10, processedTime);
+      assertEquals(10, op.getProcessedTime());
+      processedTime = wst.process(10);
+      assertEquals(10, processedTime);
+      assertEquals(20, op.getProcessedTime());
+   }
+
+   @Test
+   void processOperationFinishOperation() {
+      Workstation wst = new Workstation();
+      Operator operator = new Operator("idOperator");
+      wst.getAssignedOperators().add(operator);
+      Operation op = new Operation("opId", 100);
+      op.setRequiredOperators(1);
+      wst.setCurrentOperation(op);
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
+      wst.process(100);
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
+   }
+   
+   @Test
+   void processOperationExeedCycleTime() {
+      Workstation wst = new Workstation();
+      Operator operator = new Operator("idOperator");
+      wst.getAssignedOperators().add(operator);
+      Operation op = new Operation("opId", 100);
+      op.setRequiredOperators(1);
+      wst.setCurrentOperation(op);
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
+      long processedTime;
+      processedTime = wst.process(120);
+      assertEquals(100, processedTime);
+      assertEquals(100, op.getProcessedTime());
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
+   }
+
+   
 }
