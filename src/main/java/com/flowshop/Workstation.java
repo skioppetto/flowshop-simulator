@@ -30,7 +30,8 @@ public class Workstation {
    }
 
    public long process(long i) {
-      if (currentOperation.getProcessedTime() >= currentOperation.getCycleTime())
+      if (this.getStatus() != Status.PROCESSING
+            || currentOperation.getProcessedTime() >= currentOperation.getCycleTime())
          return 0l;
       long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
       currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());

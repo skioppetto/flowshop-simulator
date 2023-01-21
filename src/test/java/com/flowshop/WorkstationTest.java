@@ -214,7 +214,7 @@ public class WorkstationTest {
       wst.process(100);
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
    }
-   
+
    @Test
    void processOperationExeedCycleTime() {
       Workstation wst = new Workstation();
@@ -229,6 +229,27 @@ public class WorkstationTest {
       assertEquals(100, processedTime);
       assertEquals(100, op.getProcessedTime());
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
+   }
+
+   @Test
+   void processOperationOnIdleStatus(){
+      Workstation wst = new Workstation();
+      Operator operator = new Operator("idOperator");
+      wst.getAssignedOperators().add(operator);
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
+      long processedTime = wst.process(10);
+      assertEquals(0, processedTime);
+   }
+
+   @Test
+   void processOperationOnWaitingForOperatorStatus(){
+      Workstation wst = new Workstation();
+      Operation op = new Operation("opId", 100);
+      op.setRequiredOperators(1);
+      wst.setCurrentOperation(op);
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
+      long processedTime = wst.process(10);
+      assertEquals(0, processedTime);
    }
 
    
