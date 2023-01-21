@@ -2,6 +2,7 @@ package com.flowshop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -131,6 +132,21 @@ public class WorkstationTest {
       assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
       wst.getAssignedOperators().remove(operator);
       assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
+   }
+
+   @Test
+   // let's simplify status management by automatically set the assigned
+   // workstation to the operator when added to assigned operators
+   void operatorAssignedWorkstationUpdated() {
+      Workstation wst = new Workstation();
+      Operator operator = new Operator("idOperator");
+      assertEquals(Operator.Status.IDLE, operator.getStatus());
+      wst.getAssignedOperators().add(operator);
+      assertEquals(Operator.Status.PROCESSING, operator.getStatus());
+      assertEquals(wst, operator.getAssignedWorkstation());
+      wst.getAssignedOperators().remove(operator);
+      assertEquals(Operator.Status.IDLE, operator.getStatus());
+      assertNull(operator.getAssignedWorkstation());
    }
 
    // TODO: how can I remove an operation? In this case the status should go back

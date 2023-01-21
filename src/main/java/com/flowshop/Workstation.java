@@ -1,9 +1,9 @@
 package com.flowshop;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 public class Workstation {
@@ -13,7 +13,9 @@ public class Workstation {
    };
 
    Operation currentOperation;
-   Set<Operator> assignedOperators = new HashSet<>();
+
+   @ToString.Exclude
+   Set<Operator> assignedOperators = new WorkstationOperatorsSet(this);
 
    public Integer getRequiredOperators() {
       return (null == currentOperation) ? 0 : currentOperation.getRequiredOperators();
