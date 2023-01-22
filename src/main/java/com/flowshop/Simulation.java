@@ -22,10 +22,12 @@ public class Simulation {
    }
 
    public void start() {
-      Operation firstOperation = orders.get(0).getOperations().get(0);
-      Workstation workstation = firstOperation.getRequiredWorkstation();
-      workstation.setCurrentOperation(firstOperation);
-      workstation.process(1);
+      for (Order order : orders) {
+         Operation firstOperation = order.getOperations().get(0);
+         Workstation workstation = firstOperation.getRequiredWorkstation();
+         if (workstation.getCurrentOperation() == null)
+            workstation.setCurrentOperation(firstOperation);
+      }
    }
 
    public void process(int i) {
