@@ -1,6 +1,7 @@
 package com.flowshop;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 public class Operation {
@@ -13,6 +14,7 @@ public class Operation {
    private final long cycleTime;
    private long processedTime = 0;
    private final Workstation requiredWorkstation;
+   @ToString.Exclude
    private final Operation nextOperation;
 
    public Status getStatus() {

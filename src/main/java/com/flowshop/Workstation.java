@@ -17,6 +17,7 @@ public class Workstation {
       IDLE, WAITING_FOR_OPERATOR, PROCESSING, BLOCKED
    };
 
+   @ToString.Exclude
    Operation currentOperation;
 
    @ToString.Exclude
