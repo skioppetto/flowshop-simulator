@@ -12,9 +12,9 @@ public class Workstation {
 
    @EqualsAndHashCode.Include
    private final String id;
-   
+
    public enum Status {
-      IDLE, WAITING_FOR_OPERATOR, PROCESSING
+      IDLE, WAITING_FOR_OPERATOR, PROCESSING, BLOCKED
    };
 
    Operation currentOperation;
@@ -31,6 +31,8 @@ public class Workstation {
          return Status.IDLE;
       if (assignedOperators.size() < currentOperation.getRequiredOperators())
          return Status.WAITING_FOR_OPERATOR;
+      if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime())
+         return Status.BLOCKED;
       return Status.PROCESSING;
    }
 
@@ -40,9 +42,15 @@ public class Workstation {
          return 0l;
       long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
       currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());
-      if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime())
+      if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime() && !isBlocked())
          this.currentOperation = null;
       return processTime;
+   }
+
+   private boolean isBlocked() {
+      return currentOperation.getNextOperation() != null
+            && !currentOperation.getNextOperation().getRequiredWorkstation().getStatus()
+                  .equals(Workstation.Status.IDLE);
    }
 
 }

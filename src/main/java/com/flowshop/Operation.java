@@ -13,6 +13,7 @@ public class Operation {
    private final long cycleTime;
    private long processedTime = 0;
    private final Workstation requiredWorkstation;
+   private final Operation nextOperation;
 
    public Status getStatus() {
       if (processedTime == 0)
