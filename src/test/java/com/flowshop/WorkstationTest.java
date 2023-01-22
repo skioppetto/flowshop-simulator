@@ -272,7 +272,22 @@ public class WorkstationTest {
       // now let's suppose the op1 on wst2 was finished
       wst1.setCurrentOperation(op1);
       wst1.process(100);
+      wst1.evalBlockedStatus();
       assertEquals(Workstation.Status.BLOCKED, wst1.getStatus());
+   }
+
+   @Test
+   // this information is needed to unrelease the latest worked operation in case
+   // of blocking status. Blocking status must be calculated after all workstations
+   // are processed.
+   void latestOperationSaved() {
+      Workstation wst2 = new Workstation("wst1");
+      Operation op2 = new Operation("opId2", 100l, wst2, null);
+      wst2.setCurrentOperation(op2);
+      wst2.process(100l);
+      assertEquals(Workstation.Status.IDLE, wst2.getStatus());
+      assertEquals(null, wst2.getCurrentOperation());
+      assertEquals(op2, wst2.getLatestOperation());
 
    }
 

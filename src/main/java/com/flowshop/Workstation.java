@@ -23,6 +23,8 @@ public class Workstation {
    @ToString.Exclude
    Set<Operator> assignedOperators = new WorkstationOperatorsSet(this);
 
+   private Operation latestOperation;
+
    public Integer getRequiredOperators() {
       return (null == currentOperation) ? 0 : currentOperation.getRequiredOperators();
    }
@@ -43,14 +45,24 @@ public class Workstation {
          return 0l;
       long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
       currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());
-      if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime() && !isBlocked())
+      if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime()) {
+         this.latestOperation = currentOperation;
          this.currentOperation = null;
+      }
       return processTime;
    }
 
-   private boolean isBlocked() {
-      return currentOperation.getNextOperation() != null
-            && !currentOperation.getNextOperation().getRequiredWorkstation().getStatus()
+   // this method should be called after all workstations are processed
+   public boolean evalBlockedStatus() {
+      boolean isBlocked = wasBlocked();
+      if (isBlocked)
+         this.currentOperation = this.latestOperation;
+      return isBlocked;
+   }
+
+   private boolean wasBlocked() {
+      return latestOperation.getNextOperation() != null
+            && !latestOperation.getNextOperation().getRequiredWorkstation().getStatus()
                   .equals(Workstation.Status.IDLE);
    }
 
