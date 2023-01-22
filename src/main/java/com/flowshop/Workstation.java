@@ -3,11 +3,16 @@ package com.flowshop;
 import java.util.Set;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Workstation {
 
+   @EqualsAndHashCode.Include
+   private final String id;
+   
    public enum Status {
       IDLE, WAITING_FOR_OPERATOR, PROCESSING
    };
