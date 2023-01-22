@@ -18,7 +18,7 @@ public class WorkstationTest {
 
    void pushOperation() {
       Workstation wst = new Workstation();
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       wst.setCurrentOperation(op);
       assertNotNull(wst.getCurrentOperation());
       assertEquals(op.getId(), wst.getCurrentOperation().getId());
@@ -31,12 +31,12 @@ public class WorkstationTest {
    void requiredOperators() {
       Workstation wst = new Workstation();
       assertEquals(0, wst.getRequiredOperators());
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(2);
       wst.setCurrentOperation(op);
       assertEquals(2, wst.getRequiredOperators());
 
-      Operation op1 = new Operation("opID2", 100);
+      Operation op1 = new Operation("opID2", 100, wst);
       op1.setRequiredOperators(3);
       wst.setCurrentOperation(op1);
       assertEquals(3, wst.getRequiredOperators());
@@ -84,7 +84,7 @@ public class WorkstationTest {
    void statusWaitForOperator() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
@@ -97,7 +97,7 @@ public class WorkstationTest {
    void statusWaitForOpeatorLowerThanRequired() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(2);
       wst.setCurrentOperation(op);
       Operator operator = new Operator("idOperator");
@@ -111,7 +111,7 @@ public class WorkstationTest {
    void statusProcessing() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       Operator operator = new Operator("idOperator");
@@ -124,7 +124,7 @@ public class WorkstationTest {
    void statusProcessingBackToWaitingForOperator() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       Operator operator = new Operator("idOperator");
@@ -138,7 +138,7 @@ public class WorkstationTest {
    void statusProcessingBackToIdle() {
       Workstation wst = new Workstation();
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
-      Operation op = new Operation("opId", 100l);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
@@ -175,7 +175,7 @@ public class WorkstationTest {
       Workstation wst = new Workstation();
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
-      Operation op = new Operation("opId", 100);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
@@ -189,7 +189,7 @@ public class WorkstationTest {
       Workstation wst = new Workstation();
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
-      Operation op = new Operation("opId", 100);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
@@ -207,7 +207,7 @@ public class WorkstationTest {
       Workstation wst = new Workstation();
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
-      Operation op = new Operation("opId", 100);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
@@ -220,7 +220,7 @@ public class WorkstationTest {
       Workstation wst = new Workstation();
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
-      Operation op = new Operation("opId", 100);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
@@ -244,7 +244,7 @@ public class WorkstationTest {
    @Test
    void processOperationOnWaitingForOperatorStatus(){
       Workstation wst = new Workstation();
-      Operation op = new Operation("opId", 100);
+      Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
       assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
