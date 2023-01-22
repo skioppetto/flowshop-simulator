@@ -17,7 +17,7 @@ public class WorkstationTest {
    // TODO: what happen if it's busy and I try to push an operation?
 
    void pushOperation() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operation op = new Operation("opId", 100l, wst);
       wst.setCurrentOperation(op);
       assertNotNull(wst.getCurrentOperation());
@@ -29,7 +29,7 @@ public class WorkstationTest {
    // on the operation requirement to get the work done.
    // This test
    void requiredOperators() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(0, wst.getRequiredOperators());
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(2);
@@ -50,7 +50,7 @@ public class WorkstationTest {
    // or I can book more operators as I know that in the next future I will require
    // some more operators
    void assignOperators() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertTrue(wst.getAssignedOperators().isEmpty());
       Operator operator = new Operator("operatorId");
       wst.getAssignedOperators().add(operator);
@@ -64,7 +64,7 @@ public class WorkstationTest {
    // IDLE: means that the workstation is currently stopped due to lack of
    // operation
    void statusIdleAtCreation() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
    }
 
@@ -72,7 +72,7 @@ public class WorkstationTest {
    // status is IDLE even if I bind some operators but I've not set the operation
    // on the workstation
    void statusIdleSetOnlyOperators() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("operator");
       wst.getAssignedOperators().add(operator);
       assertEquals(Status.IDLE, wst.getStatus());
@@ -82,7 +82,7 @@ public class WorkstationTest {
    // WAIT_FOR_OPERATOR: means that there is an operation assigned but still not
    // enough operators binded
    void statusWaitForOperator() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
@@ -95,7 +95,7 @@ public class WorkstationTest {
    // WAIT_FOR_OPEATOR: let's test the case where the operation needs more than one
    // operator and I bind a lower number than required
    void statusWaitForOpeatorLowerThanRequired() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(2);
@@ -109,7 +109,7 @@ public class WorkstationTest {
    // PROCESSING: this status happen when a workstation has on operation and at
    // least the required operators assigned
    void statusProcessing() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
@@ -122,7 +122,7 @@ public class WorkstationTest {
    // PROCESSING: this status happen when a workstation has on operation and at
    // least the required operators assigned
    void statusProcessingBackToWaitingForOperator() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
@@ -136,7 +136,7 @@ public class WorkstationTest {
 
    @Test
    void statusProcessingBackToIdle() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
@@ -154,7 +154,7 @@ public class WorkstationTest {
    // let's simplify status management by automatically set the assigned
    // workstation to the operator when added to assigned operators
    void operatorAssignedWorkstationUpdated() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("idOperator");
       assertEquals(Operator.Status.IDLE, operator.getStatus());
       wst.getAssignedOperators().add(operator);
@@ -172,7 +172,7 @@ public class WorkstationTest {
    // no more time to process and the operation will be "released" and then the
    // workstation will go to IDLE state
    void processOperation() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
       Operation op = new Operation("opId", 100l, wst);
@@ -186,7 +186,7 @@ public class WorkstationTest {
 
    @Test
    void processOperationMoreTimes() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
       Operation op = new Operation("opId", 100l, wst);
@@ -204,7 +204,7 @@ public class WorkstationTest {
 
    @Test
    void processOperationFinishOperation() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
       Operation op = new Operation("opId", 100l, wst);
@@ -217,7 +217,7 @@ public class WorkstationTest {
 
    @Test
    void processOperationExeedCycleTime() {
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
       Operation op = new Operation("opId", 100l, wst);
@@ -233,7 +233,7 @@ public class WorkstationTest {
 
    @Test
    void processOperationOnIdleStatus(){
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operator operator = new Operator("idOperator");
       wst.getAssignedOperators().add(operator);
       assertEquals(Workstation.Status.IDLE, wst.getStatus());
@@ -243,7 +243,7 @@ public class WorkstationTest {
 
    @Test
    void processOperationOnWaitingForOperatorStatus(){
-      Workstation wst = new Workstation();
+      Workstation wst = new Workstation("wst");
       Operation op = new Operation("opId", 100l, wst);
       op.setRequiredOperators(1);
       wst.setCurrentOperation(op);
