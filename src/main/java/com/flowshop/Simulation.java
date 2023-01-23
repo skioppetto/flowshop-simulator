@@ -47,13 +47,13 @@ public class Simulation {
       Collection<Workstation.Status> blockedOrIdleStatus = Arrays.asList(Workstation.Status.BLOCKED,
             Workstation.Status.IDLE);
       // release operators for idle and blocked workstations
-      workstations.stream()
+      workstations.stream().parallel()
             .filter(workstation -> blockedOrIdleStatus
                   .contains(workstation.getStatus()))
             .forEach(this::unassignOperators);
       // operators assigment priority to WAIT_FOR_OPERATOR workstations
       if (!this.availableOperators.isEmpty())
-         workstations.stream()
+         workstations.stream().parallel()
                .filter(workstation -> Workstation.Status.WAITING_FOR_OPERATOR
                      .equals(workstation.getStatus()))
                .forEach(this::assignOperators);
