@@ -33,6 +33,7 @@ public class Simulation {
    public void process(int i) {
       // process all workstations
       workstations.forEach(workstation -> workstation.process(i));
+      workstations.forEach(workstation -> workstation.evalBlockedStatus());
 
       for (Order order : orders) {
          Operation op = order.getNextOperation();
