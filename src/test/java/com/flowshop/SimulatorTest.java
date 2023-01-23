@@ -146,10 +146,9 @@ public class SimulatorTest {
       sim.process(1);
       sim.process(1); // look at previous test for expected states
       sim.process(1);
-      // sim.process(1);
 
       assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(Operation.Status.PROGRESS, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(0).getStatus());
       assertEquals(ord3.getOperations().get(0), workstations[0].getCurrentOperation());
 
       assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
@@ -158,6 +157,88 @@ public class SimulatorTest {
 
       Arrays.asList(ord3.getOperations().get(0), ord3.getOperations().get(1))
             .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
+   }
+
+   @Test
+   void twoStationsProgress5Simulation() {
+      Workstation[] workstations = new Workstation[] { new Workstation("wst1"), new Workstation("wst2") };
+      Order ord1 = buildOrder("ord1", workstations, new long[] { 1, 3 });
+      Order ord2 = buildOrder("ord2", workstations, new long[] { 1, 1 });
+      Order ord3 = buildOrder("ord3", workstations, new long[] { 2, 1 });
+      Simulation sim = new Simulation(Arrays.asList(ord1, ord2, ord3));
+
+      sim.start();
+      sim.process(1);
+      sim.process(1);
+      sim.process(1);
+      sim.process(1); // look at previous test for expected states
+      sim.process(1);
+
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Operation.Status.PROGRESS, ord3.getOperations().get(0).getStatus());
+      assertEquals(ord3.getOperations().get(0), workstations[0].getCurrentOperation());
+
+      // now the second station is idle as second op of second order was finished
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(1).getStatus());
+
+      Arrays.asList(ord3.getOperations().get(1))
+            .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
+   }
+
+   @Test
+   void twoStationsProgress6Simulation() {
+      Workstation[] workstations = new Workstation[] { new Workstation("wst1"), new Workstation("wst2") };
+      Order ord1 = buildOrder("ord1", workstations, new long[] { 1, 3 });
+      Order ord2 = buildOrder("ord2", workstations, new long[] { 1, 1 });
+      Order ord3 = buildOrder("ord3", workstations, new long[] { 2, 1 });
+      Simulation sim = new Simulation(Arrays.asList(ord1, ord2, ord3));
+
+      sim.start();
+      sim.process(1);
+      sim.process(1);
+      sim.process(1);
+      sim.process(1);
+      sim.process(1); // look at previous test for expected states
+      sim.process(1);
+
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Operation.Status.DONE, ord3.getOperations().get(0).getStatus());
+
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
+      assertEquals(ord3.getOperations().get(1), workstations[1].getCurrentOperation());
+   }
+
+   @Test
+   void twoStationsProgress7Simulation() {
+      Workstation[] workstations = new Workstation[] { new Workstation("wst1"), new Workstation("wst2") };
+      Order ord1 = buildOrder("ord1", workstations, new long[] { 1, 3 });
+      Order ord2 = buildOrder("ord2", workstations, new long[] { 1, 1 });
+      Order ord3 = buildOrder("ord3", workstations, new long[] { 2, 1 });
+      Simulation sim = new Simulation(Arrays.asList(ord1, ord2, ord3));
+
+      sim.start();
+      sim.process(1);
+      sim.process(1);
+      sim.process(1);
+      sim.process(1);
+      sim.process(1);
+      sim.process(1); // look at previous test for expected states
+      sim.process(1);
+
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Operation.Status.DONE, ord3.getOperations().get(0).getStatus());
+
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Operation.Status.DONE, ord3.getOperations().get(1).getStatus());
+
+      // all operations were closed successfully
+      for (Order order : sim.getOrders()) {
+         for (Operation operation : order.getOperations()) {
+            assertEquals(Operation.Status.DONE, operation.getStatus());
+         }
+      }
    }
 
 }
