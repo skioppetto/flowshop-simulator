@@ -58,8 +58,8 @@ public class Simulation {
                      .equals(workstation.getStatus()))
                .forEach(this::assignOperators);
       // process all workstations
-      workstations.forEach(workstation -> workstation.process(i));
-      workstations.forEach(workstation -> workstation.evalBlockedStatus());
+      workstations.stream().parallel().forEach(workstation -> workstation.process(i));
+      workstations.stream().parallel().forEach(workstation -> workstation.evalBlockedStatus());
       // try to push new operations
       for (Order order : orders) {
          Operation op = order.getNextOperation();
