@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 import com.flowshop.Workstation.Status;
@@ -164,6 +166,65 @@ public class WorkstationTest {
       assertEquals(Operator.Status.IDLE, operator.getStatus());
       assertNull(operator.getAssignedWorkstation());
    }
+
+   @Test
+   // let's simplify status management by automatically set the assigned
+   // workstation to the operator when added to assigned operators
+   void operatorsCollectionAssignedWorkstationUpdated() {
+      Workstation wst = new Workstation("wst");
+      Operator operator1 = new Operator("idOperator1");
+      Operator operator2 = new Operator("idOperator2");
+      Operator operator3 = new Operator("idOperator3");
+      assertEquals(Operator.Status.IDLE, operator1.getStatus());
+      assertEquals(Operator.Status.IDLE, operator2.getStatus());
+      assertEquals(Operator.Status.IDLE, operator3.getStatus());
+      
+      wst.getAssignedOperators().addAll(Arrays.asList(operator1, operator2, operator3));
+      assertEquals(Operator.Status.PROCESSING, operator1.getStatus());
+      assertEquals(Operator.Status.PROCESSING, operator2.getStatus());
+      assertEquals(Operator.Status.PROCESSING, operator3.getStatus());
+      assertEquals(wst, operator1.getAssignedWorkstation());
+      assertEquals(wst, operator2.getAssignedWorkstation());
+      assertEquals(wst, operator3.getAssignedWorkstation());
+
+      wst.getAssignedOperators().removeAll(Arrays.asList(operator1, operator2));
+      assertEquals(Operator.Status.IDLE, operator1.getStatus());
+      assertEquals(Operator.Status.IDLE, operator2.getStatus());
+      assertEquals(Operator.Status.PROCESSING, operator3.getStatus());
+      assertNull(operator1.getAssignedWorkstation());
+      assertNull(operator2.getAssignedWorkstation());
+      assertEquals(wst, operator3.getAssignedWorkstation());
+   }
+
+   @Test
+   // let's simplify status management by automatically set the assigned
+   // workstation to the operator when added to assigned operators
+   void operatorsCollectionClearAssignedWorkstations() {
+      Workstation wst = new Workstation("wst");
+      Operator operator1 = new Operator("idOperator1");
+      Operator operator2 = new Operator("idOperator2");
+      Operator operator3 = new Operator("idOperator3");
+      assertEquals(Operator.Status.IDLE, operator1.getStatus());
+      assertEquals(Operator.Status.IDLE, operator2.getStatus());
+      assertEquals(Operator.Status.IDLE, operator3.getStatus());
+      
+      wst.getAssignedOperators().addAll(Arrays.asList(operator1, operator2, operator3));
+      assertEquals(Operator.Status.PROCESSING, operator1.getStatus());
+      assertEquals(Operator.Status.PROCESSING, operator2.getStatus());
+      assertEquals(Operator.Status.PROCESSING, operator3.getStatus());
+      assertEquals(wst, operator1.getAssignedWorkstation());
+      assertEquals(wst, operator2.getAssignedWorkstation());
+      assertEquals(wst, operator3.getAssignedWorkstation());
+
+      wst.getAssignedOperators().clear();
+      assertEquals(Operator.Status.IDLE, operator1.getStatus());
+      assertEquals(Operator.Status.IDLE, operator2.getStatus());
+      assertEquals(Operator.Status.IDLE, operator3.getStatus());
+      assertNull(operator1.getAssignedWorkstation());
+      assertNull(operator2.getAssignedWorkstation());
+      assertNull(operator3.getAssignedWorkstation());
+   }
+
 
    @Test
    // I can ask to a workstation to process some unit of time,

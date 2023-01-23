@@ -36,4 +36,11 @@ public class WorkstationOperatorsSet extends HashSet<Operator> {
       return super.addAll(c);
    }
 
+   @Override
+   public void clear() {
+      this.stream().forEach(operator -> ((Operator) operator).setAssignedWorkstation(null));
+      super.clear();
+   }
+
+   
 }
