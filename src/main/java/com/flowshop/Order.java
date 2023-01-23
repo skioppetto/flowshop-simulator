@@ -12,23 +12,20 @@ public class Order {
    }
 
    private final List<Operation> operations;
+   private int nextOperationIdx = 0;
 
    public Operation getNextOperation() {
       Status orderStatus = getStatus();
-      if (orderStatus.equals(Status.TODO))
-         return operations.get(0);
-      else if (orderStatus.equals(Status.DONE))
+      if (orderStatus.equals(Status.DONE)) {
          return null;
-      else {
-         for (Operation operation : operations) {
-            if (Operation.Status.TODO.equals(operation.getStatus()))
-               return operation;
-            else if (Operation.Status.PROGRESS.equals(operation.getStatus()))
-               return null;
-         }
+      } else {
+         Operation.Status nextOperationStatus = operations.get(this.nextOperationIdx).getStatus();
+         if (nextOperationStatus.equals(Operation.Status.PROGRESS))
+            return null;
+         else if (nextOperationStatus.equals(Operation.Status.DONE))
+            this.nextOperationIdx++;
       }
-      // this should never happen as it means that the status order is DONE
-      return null;
+      return operations.get(nextOperationIdx);
    }
 
    public Status getStatus() {
