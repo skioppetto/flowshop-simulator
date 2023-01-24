@@ -5,9 +5,9 @@ import java.util.HashSet;
 
 public class WorkstationOperatorsSet extends HashSet<Operator> {
 
-   private Workstation workstation;
+   private WorkCell workstation;
 
-   public WorkstationOperatorsSet(Workstation workstation) {
+   public WorkstationOperatorsSet(WorkCell workstation) {
       super();
       this.workstation = workstation;
    }

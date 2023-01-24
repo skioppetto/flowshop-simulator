@@ -15,7 +15,7 @@ public class OperatorTest {
    void assignWorkstation() {
       Operator operator = new Operator("operator");
       assertNull(operator.getAssignedWorkstation());
-      Workstation wst = new Workstation("wst");
+      WorkCell wst = new WorkCell("wst");
       operator.setAssignedWorkstation(wst);
       assertEquals(wst, operator.getAssignedWorkstation());
    }
@@ -30,7 +30,7 @@ public class OperatorTest {
    void statusProcessing() {
       Operator operator = new Operator("operator");
       assertNull(operator.getAssignedWorkstation());
-      Workstation wst = new Workstation("wst");
+      WorkCell wst = new WorkCell("wst");
       operator.setAssignedWorkstation(wst);
       assertEquals(Operator.Status.PROCESSING, operator.getStatus());
    }
@@ -39,7 +39,7 @@ public class OperatorTest {
    void statusBackToIdle() {
       Operator operator = new Operator("operator");
       assertNull(operator.getAssignedWorkstation());
-      Workstation wst = new Workstation("wst");
+      WorkCell wst = new WorkCell("wst");
       operator.setAssignedWorkstation(wst);
       assertEquals(Operator.Status.PROCESSING, operator.getStatus());
       operator.setAssignedWorkstation(null);

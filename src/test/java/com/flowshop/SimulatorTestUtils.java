@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class SimulatorTestUtils {
    
-   public static Order buildOrder(String orderId, Workstation[] workstations, long[] cycletimes) {
+   public static Order buildOrder(String orderId, WorkCell[] workstations, long[] cycletimes) {
       Operation[] operations = new Operation[workstations.length];
       for (int i = workstations.length - 1; i >= 0; i--) {
          Operation nextOperation = (i == workstations.length - 1) ? null : operations[i + 1];

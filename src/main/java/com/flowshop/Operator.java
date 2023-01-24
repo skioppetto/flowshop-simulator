@@ -14,7 +14,7 @@ public class Operator {
    @EqualsAndHashCode.Include
    private final String id;
    
-   private Workstation assignedWorkstation;
+   private WorkCell assignedWorkstation;
 
    public Status getStatus() {
       return (null == assignedWorkstation) ? Status.IDLE : Status.PROCESSING;

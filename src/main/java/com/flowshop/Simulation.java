@@ -13,7 +13,7 @@ public class Simulation {
    @Getter
    private final List<Order> orders;
    @Getter
-   private final Set<Workstation> workstations = new HashSet<>();
+   private final Set<WorkCell> workstations = new HashSet<>();
    @Getter
    private final Set<Operator> availableOperators = new HashSet<>();
    private final Set<Operator> assignedOperators = new HashSet<>();
@@ -35,17 +35,18 @@ public class Simulation {
    public void start() {
       for (Order order : orders) {
          Operation firstOperation = order.getOperations().get(0);
-         Workstation workstation = firstOperation.getRequiredWorkstation();
-         if (workstation.getCurrentOperation() == null) {
-            workstation.setCurrentOperation(firstOperation);
+         WorkCell workstation = firstOperation.getRequiredWorkstation();
+         // TODO: what happen if the workstation is in reality is a workgroup?
+         // currentOperation should be bind to each workstation within the group
+         if (workstation.assignOperation(firstOperation)) {
             assignOperators(workstation);
          }
       }
    }
 
    public void process(int i) {
-      Collection<Workstation.Status> blockedOrIdleStatus = Arrays.asList(Workstation.Status.BLOCKED,
-            Workstation.Status.IDLE);
+      Collection<WorkCell.Status> blockedOrIdleStatus = Arrays.asList(WorkCell.Status.BLOCKED,
+            WorkCell.Status.IDLE);
       // release operators for idle and blocked workstations
       workstations.stream().parallel()
             .filter(workstation -> blockedOrIdleStatus
@@ -54,7 +55,7 @@ public class Simulation {
       // operators assigment priority to WAIT_FOR_OPERATOR workstations
       if (!this.availableOperators.isEmpty())
          workstations.stream().parallel()
-               .filter(workstation -> Workstation.Status.WAITING_FOR_OPERATOR
+               .filter(workstation -> WorkCell.Status.WAITING_FOR_OPERATOR
                      .equals(workstation.getStatus()))
                .forEach(this::assignOperators);
       // process all workstations
@@ -63,24 +64,27 @@ public class Simulation {
       // try to push new operations
       for (Order order : orders) {
          Operation op = order.getNextOperation();
-         if (null != op && null == op.getRequiredWorkstation().getCurrentOperation()) {
-            op.getRequiredWorkstation().setCurrentOperation(op);
+         if (null != op && op.getRequiredWorkstation().assignOperation(op)) {
             assignOperators(op.getRequiredWorkstation());
          }
       }
    }
 
-   private void assignOperators(Workstation workstation) {
-      while (!this.availableOperators.isEmpty() && workstation.getCurrentOperation() != null
-            && workstation.getAssignedOperators().size() < workstation.getCurrentOperation().getRequiredOperators()) {
+   // this method will work with single workstations
+   private void assignOperators(WorkCell workstation) {
+      Set<Operator> workstationOperators = workstation.getAssignedOperators();
+      Operation assignedOperation = workstation.getCurrentOperation();
+      while (!this.availableOperators.isEmpty() && !workstation.getStatus().equals(WorkCell.Status.IDLE)
+            && workstationOperators.size() < assignedOperation.getRequiredOperators()) {
          Operator op = this.availableOperators.iterator().next();
-         workstation.assignedOperators.add(op);
+         workstationOperators.add(op);
          this.assignedOperators.add(op);
          this.availableOperators.remove(op);
       }
    }
 
-   private void unassignOperators(Workstation workstation) {
+   // this method will work with single workstations
+   private void unassignOperators(WorkCell workstation) {
       this.availableOperators.addAll(workstation.getAssignedOperators());
       workstation.getAssignedOperators().clear();
    }

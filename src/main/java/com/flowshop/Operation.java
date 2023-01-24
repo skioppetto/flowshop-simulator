@@ -13,7 +13,7 @@ public class Operation {
    private int requiredOperators;
    private final long cycleTime;
    private long processedTime = 0;
-   private final Workstation requiredWorkstation;
+   private final WorkCell requiredWorkstation;
    @ToString.Exclude
    private final Operation nextOperation;
 
