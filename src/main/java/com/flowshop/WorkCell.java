@@ -1,5 +1,7 @@
 package com.flowshop;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -25,7 +27,6 @@ public class WorkCell {
    private Operation currentOperation;
 
    @ToString.Exclude
-   @Getter
    private Set<Operator> assignedOperators = new WorkstationOperatorsSet(this);
 
    @ToString.Exclude
@@ -81,12 +82,22 @@ public class WorkCell {
       return false;
    }
 
-   public boolean unassignOperators() {
-      if (this.getStatus().equals(Status.PROCESSING) || this.getAssignedOperators().isEmpty())
-         return false;
-      this.getAssignedOperators().clear();
-      return true;
+   public void assignOperators(Operator... operators) {
+      for (Operator operator : operators)
+         assignedOperators.add(operator);
+   }
 
+   public Set<Operator> unassignOperators() {
+      if (this.getStatus().equals(Status.PROCESSING) || assignedOperators.isEmpty())
+         return Collections.emptySet();
+      HashSet<Operator> returnSet = new HashSet<>(assignedOperators);
+      assignedOperators.clear();
+      return returnSet;
+
+   }
+
+   public int getAssignedOperators() {
+      return assignedOperators.size();
    }
 
 }

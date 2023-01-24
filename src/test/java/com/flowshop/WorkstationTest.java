@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,45 +49,48 @@ public class WorkstationTest {
    // some more operators
    void assignOperators() {
       WorkCell wst = new WorkCell("wst");
-      assertTrue(wst.getAssignedOperators().isEmpty());
+      assertEquals(0, wst.getAssignedOperators());
       Operator operator = new Operator("operatorId");
-      wst.getAssignedOperators().add(operator);
-      assertEquals(1, wst.getAssignedOperators().size());
-      wst.getAssignedOperators().remove(operator);
-      assertTrue(wst.getAssignedOperators().isEmpty());
+      wst.assignOperators(operator);
+      assertEquals(1, wst.getAssignedOperators());
+      assertEquals(wst, operator.getAssignedWorkstation());
    }
 
    @Test
    void unassignOperatorsEnabled() {
       WorkCell wst = new WorkCell("wst");
-      assertTrue(wst.getAssignedOperators().isEmpty());
+      assertEquals(0, wst.getAssignedOperators());
       Operator operator = new Operator("operatorId");
-      wst.getAssignedOperators().add(operator);
-      assertTrue(wst.unassignOperators());
-      assertNull(operator.getAssignedWorkstation());
+      wst.assignOperators(operator);
+      Set<Operator> releasedOperators = wst.unassignOperators();
+      assertTrue(releasedOperators.contains(operator));
+      assertEquals(1, releasedOperators.size());
+      assertNull(releasedOperators.iterator().next().getAssignedWorkstation());
    }
 
    @Test
    void unassignOperatorsDisabledStatusProcessing() {
       WorkCell wst = new WorkCell("wst");
-      assertTrue(wst.getAssignedOperators().isEmpty());
+      assertEquals(0, wst.getAssignedOperators());
       Operator operator = new Operator("operatorId");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       Operation op = new Operation("opId", 100l, wst, null);
       wst.assignOperation(op);
-      assertFalse(wst.unassignOperators());
-      assertFalse(wst.getAssignedOperators().isEmpty());
-      assertEquals(operator, wst.getAssignedOperators().iterator().next());
+      Set<Operator> releasedOperators = wst.unassignOperators();
+      assertTrue(releasedOperators.isEmpty());
+      assertEquals(1, wst.getAssignedOperators());
+      assertEquals(wst, operator.getAssignedWorkstation());
    }
 
    @Test
    void unassignOperatorsDisabledStatusWaitingForOp() {
       WorkCell wst = new WorkCell("wst");
-      assertTrue(wst.getAssignedOperators().isEmpty());
+      assertEquals(0, wst.getAssignedOperators());
       Operation op = new Operation("opId", 100l, wst, null);
       wst.assignOperation(op);
-      assertFalse(wst.unassignOperators());
-      assertTrue(wst.getAssignedOperators().isEmpty());
+      Set<Operator> releasedOperators = wst.unassignOperators();
+      assertTrue(releasedOperators.isEmpty());
+      assertEquals(0, wst.getAssignedOperators());
    }
 
    // let's give a look to all different statuses now
@@ -104,7 +108,7 @@ public class WorkstationTest {
    void statusIdleSetOnlyOperators() {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("operator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       assertEquals(Status.IDLE, wst.getStatus());
    }
 
@@ -131,7 +135,7 @@ public class WorkstationTest {
       op.setRequiredOperators(2);
       assertNotNull(wst.assignOperation(op));
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, wst.getStatus());
    }
 
@@ -145,7 +149,7 @@ public class WorkstationTest {
       op.setRequiredOperators(1);
       assertNotNull(wst.assignOperation(op));
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       assertEquals(WorkCell.Status.PROCESSING, wst.getStatus());
    }
 
@@ -158,9 +162,9 @@ public class WorkstationTest {
       op.setRequiredOperators(1);
       assertNotNull(wst.assignOperation(op));
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       assertEquals(WorkCell.Status.PROCESSING, wst.getStatus());
-      wst.getAssignedOperators().remove(operator);
+      wst.unassignOperators();
       assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, wst.getStatus());
    }
 
@@ -171,10 +175,10 @@ public class WorkstationTest {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("idOperator");
       assertEquals(Operator.Status.IDLE, operator.getStatus());
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       assertEquals(Operator.Status.PROCESSING, operator.getStatus());
       assertEquals(wst, operator.getAssignedWorkstation());
-      wst.getAssignedOperators().remove(operator);
+      wst.unassignOperators();
       assertEquals(Operator.Status.IDLE, operator.getStatus());
       assertNull(operator.getAssignedWorkstation());
    }
@@ -191,7 +195,7 @@ public class WorkstationTest {
       assertEquals(Operator.Status.IDLE, operator2.getStatus());
       assertEquals(Operator.Status.IDLE, operator3.getStatus());
 
-      wst.getAssignedOperators().addAll(Arrays.asList(operator1, operator2, operator3));
+      wst.assignOperators(operator1, operator2, operator3);
       assertEquals(Operator.Status.PROCESSING, operator1.getStatus());
       assertEquals(Operator.Status.PROCESSING, operator2.getStatus());
       assertEquals(Operator.Status.PROCESSING, operator3.getStatus());
@@ -199,7 +203,9 @@ public class WorkstationTest {
       assertEquals(wst, operator2.getAssignedWorkstation());
       assertEquals(wst, operator3.getAssignedWorkstation());
 
-      wst.getAssignedOperators().removeAll(Arrays.asList(operator1, operator2));
+      wst.unassignOperators();
+
+      wst.assignOperators(operator3);
       assertEquals(Operator.Status.IDLE, operator1.getStatus());
       assertEquals(Operator.Status.IDLE, operator2.getStatus());
       assertEquals(Operator.Status.PROCESSING, operator3.getStatus());
@@ -220,7 +226,7 @@ public class WorkstationTest {
       assertEquals(Operator.Status.IDLE, operator2.getStatus());
       assertEquals(Operator.Status.IDLE, operator3.getStatus());
 
-      wst.getAssignedOperators().addAll(Arrays.asList(operator1, operator2, operator3));
+      wst.assignOperators(operator1, operator2, operator3);
       assertEquals(Operator.Status.PROCESSING, operator1.getStatus());
       assertEquals(Operator.Status.PROCESSING, operator2.getStatus());
       assertEquals(Operator.Status.PROCESSING, operator3.getStatus());
@@ -228,7 +234,7 @@ public class WorkstationTest {
       assertEquals(wst, operator2.getAssignedWorkstation());
       assertEquals(wst, operator3.getAssignedWorkstation());
 
-      wst.getAssignedOperators().clear();
+      wst.unassignOperators();
       assertEquals(Operator.Status.IDLE, operator1.getStatus());
       assertEquals(Operator.Status.IDLE, operator2.getStatus());
       assertEquals(Operator.Status.IDLE, operator3.getStatus());
@@ -246,7 +252,7 @@ public class WorkstationTest {
    void processOperation() {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       Operation op = new Operation("opId", 100l, wst, null);
       op.setRequiredOperators(1);
       assertNotNull(wst.assignOperation(op));
@@ -260,7 +266,7 @@ public class WorkstationTest {
    void processOperationMoreTimes() {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       Operation op = new Operation("opId", 100l, wst, null);
       op.setRequiredOperators(1);
       assertNotNull(wst.assignOperation(op));
@@ -278,7 +284,7 @@ public class WorkstationTest {
    void processOperationFinishOperation() {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       Operation op = new Operation("opId", 100l, wst, null);
       op.setRequiredOperators(1);
       assertNotNull(wst.assignOperation(op));
@@ -291,7 +297,7 @@ public class WorkstationTest {
    void processOperationExeedCycleTime() {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       Operation op = new Operation("opId", 100l, wst, null);
       op.setRequiredOperators(1);
       assertNotNull(wst.assignOperation(op));
@@ -307,7 +313,7 @@ public class WorkstationTest {
    void processOperationOnIdleStatus() {
       WorkCell wst = new WorkCell("wst");
       Operator operator = new Operator("idOperator");
-      wst.getAssignedOperators().add(operator);
+      wst.assignOperators(operator);
       assertEquals(WorkCell.Status.IDLE, wst.getStatus());
       long processedTime = wst.process(10);
       assertEquals(0, processedTime);

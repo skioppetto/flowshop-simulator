@@ -72,12 +72,11 @@ public class Simulation {
 
    // this method will work with single workstations
    private void assignOperators(WorkCell workstation) {
-      Set<Operator> workstationOperators = workstation.getAssignedOperators();
       Operation assignedOperation = workstation.getCurrentOperation();
       while (!this.availableOperators.isEmpty() && !workstation.getStatus().equals(WorkCell.Status.IDLE)
-            && workstationOperators.size() < assignedOperation.getRequiredOperators()) {
+            && workstation.getAssignedOperators() < assignedOperation.getRequiredOperators()) {
          Operator op = this.availableOperators.iterator().next();
-         workstationOperators.add(op);
+         workstation.assignOperators(op);
          this.assignedOperators.add(op);
          this.availableOperators.remove(op);
       }
@@ -85,8 +84,7 @@ public class Simulation {
 
    // this method will work with single workstations
    private void unassignOperators(WorkCell workstation) {
-      this.availableOperators.addAll(workstation.getAssignedOperators());
-      workstation.getAssignedOperators().clear();
+      this.availableOperators.addAll(workstation.unassignOperators());
    }
 
 }
