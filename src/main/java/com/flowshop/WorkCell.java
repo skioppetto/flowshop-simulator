@@ -12,7 +12,7 @@ import lombok.ToString;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @RequiredArgsConstructor
-public class WorkCell {
+public class WorkCell implements Workstation {
 
    @EqualsAndHashCode.Include
    @Getter
@@ -33,7 +33,7 @@ public class WorkCell {
    @Getter(value = AccessLevel.PACKAGE)
    private Operation latestOperation;
 
-   public Integer getRequiredOperators() {
+   public int getRequiredOperators() {
       return (null == currentOperation) ? 0 : currentOperation.getRequiredOperators();
    }
 

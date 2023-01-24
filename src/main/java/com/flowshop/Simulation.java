@@ -13,7 +13,7 @@ public class Simulation {
    @Getter
    private final List<Order> orders;
    @Getter
-   private final Set<WorkCell> workstations = new HashSet<>();
+   private final Set<Workstation> workstations = new HashSet<>();
    @Getter
    private final Set<Operator> availableOperators = new HashSet<>();
    private final Set<Operator> assignedOperators = new HashSet<>();
@@ -35,7 +35,7 @@ public class Simulation {
    public void start() {
       for (Order order : orders) {
          Operation firstOperation = order.getOperations().get(0);
-         WorkCell workstation = firstOperation.getRequiredWorkstation();
+         Workstation workstation = firstOperation.getRequiredWorkstation();
          // TODO: what happen if the workstation is in reality is a workgroup?
          // currentOperation should be bind to each workstation within the group
          if (workstation.assignOperation(firstOperation)) {
@@ -71,10 +71,10 @@ public class Simulation {
    }
 
    // this method will work with single workstations
-   private void assignOperators(WorkCell workstation) {
-      Operation assignedOperation = workstation.getCurrentOperation();
+   private void assignOperators(Workstation workstation) {
+      // Operation assignedOperation = workstation.getCurrentOperation();
       while (!this.availableOperators.isEmpty() && !workstation.getStatus().equals(WorkCell.Status.IDLE)
-            && workstation.getAssignedOperators() < assignedOperation.getRequiredOperators()) {
+            && workstation.getAssignedOperators() < workstation.getRequiredOperators()) {
          Operator op = this.availableOperators.iterator().next();
          workstation.assignOperators(op);
          this.assignedOperators.add(op);
@@ -83,7 +83,7 @@ public class Simulation {
    }
 
    // this method will work with single workstations
-   private void unassignOperators(WorkCell workstation) {
+   private void unassignOperators(Workstation workstation) {
       this.availableOperators.addAll(workstation.unassignOperators());
    }
 
