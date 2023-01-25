@@ -1,6 +1,5 @@
 package com.flowshop;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -45,14 +44,10 @@ public class Simulation {
    }
 
    public void process(int i) {
-      Collection<WorkCell.Status> blockedOrIdleStatus = Arrays.asList(WorkCell.Status.BLOCKED,
-            WorkCell.Status.IDLE);
-      // release operators for idle and blocked workstations
+      // all operators that are not working are released from the workstation
       workstations.stream().parallel()
-            .filter(workstation -> blockedOrIdleStatus
-                  .contains(workstation.getStatus()))
             .forEach(this::unassignOperators);
-      // operators assigment priority to WAIT_FOR_OPERATOR workstations
+      // operators assigment priority to WAIT_FOR_OPERATOR workstation
       if (!this.availableOperators.isEmpty())
          workstations.stream().parallel()
                .filter(workstation -> WorkCell.Status.WAITING_FOR_OPERATOR
@@ -73,7 +68,7 @@ public class Simulation {
    // this method will work with single workstations
    private void assignOperators(Workstation workstation) {
       // Operation assignedOperation = workstation.getCurrentOperation();
-      while (!this.availableOperators.isEmpty() && !workstation.getStatus().equals(WorkCell.Status.IDLE)
+      while (!this.availableOperators.isEmpty()
             && workstation.getAssignedOperators() < workstation.getRequiredOperators()) {
          Operator op = this.availableOperators.iterator().next();
          workstation.assignOperators(op);

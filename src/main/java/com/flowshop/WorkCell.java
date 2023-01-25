@@ -34,7 +34,8 @@ public class WorkCell implements Workstation {
    private Operation latestOperation;
 
    public int getRequiredOperators() {
-      return (null == currentOperation) ? 0 : currentOperation.getRequiredOperators();
+      Status status = getStatus();
+      return (status == Status.IDLE || status == Status.BLOCKED) ? 0 : currentOperation.getRequiredOperators();
    }
 
    public Status getStatus() {

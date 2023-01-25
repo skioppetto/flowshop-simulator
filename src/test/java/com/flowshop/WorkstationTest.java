@@ -1,12 +1,10 @@
 package com.flowshop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -25,6 +23,12 @@ public class WorkstationTest {
       assertNotNull(wst.assignOperation(op));
       assertNotNull(wst.getCurrentOperation());
       assertEquals(op.getId(), wst.getCurrentOperation().getId());
+   }
+
+   @Test
+   void requiredOperatorZeroIfIdle(){
+      WorkCell wst = new WorkCell("wst");
+      assertEquals(0, wst.getRequiredOperators());
    }
 
    @Test
@@ -352,6 +356,26 @@ public class WorkstationTest {
       wst1.process(100);
       wst1.evalBlockedStatus();
       assertEquals(WorkCell.Status.BLOCKED, wst1.getStatus());
+   }
+
+   @Test
+   void requiredOperatorZeroIfBlocked() {
+      WorkCell wst1 = new WorkCell("wst1");
+      WorkCell wst2 = new WorkCell("wst2");
+      Operation op2 = new Operation("opId2", 100l, wst2, null);
+      Operation op1 = new Operation("opId1", 100l, wst1, op2);
+      Operation prevOp = new Operation("prevOpId2", 100l, wst2, null);
+      // let's suppose wst2 is still running the prevOp
+      assertNotNull(wst2.assignOperation(prevOp));
+      wst2.process(10);
+      // no operators are needed so the status should be in processing
+      assertEquals(WorkCell.Status.PROCESSING, wst2.getStatus());
+      // now let's suppose the op1 on wst2 was finished
+      assertNotNull(wst1.assignOperation(op1));
+      wst1.process(100);
+      wst1.evalBlockedStatus();
+      assertEquals(WorkCell.Status.BLOCKED, wst1.getStatus());
+      assertEquals(0, wst1.getRequiredOperators());
    }
 
    @Test
