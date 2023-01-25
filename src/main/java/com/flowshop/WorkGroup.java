@@ -37,12 +37,7 @@ public class WorkGroup implements Workstation {
 
    @Override
    public long process(long i) {
-      long minProcessTime = 0;
-      for (WorkCell workCell : workCells) {
-         long processTime = workCell.evalProcess(i);
-         if (minProcessTime == 0 || processTime < minProcessTime)
-            minProcessTime = processTime;
-      }
+      long minProcessTime = workCells.stream().mapToLong(workCell -> workCell.evalProcess(i)).min().orElse(0);
       for (WorkCell workCell : workCells) {
          workCell.process(minProcessTime);
       }
@@ -51,11 +46,7 @@ public class WorkGroup implements Workstation {
 
    @Override
    public boolean evalBlockedStatus() {
-      for (WorkCell workCell : workCells) {
-         if (workCell.evalBlockedStatus())
-            return true;
-      }
-      return false;
+      return workCells.stream().map(workCell -> workCell.evalBlockedStatus()).reduce(false, Boolean::logicalOr);
    }
 
    @Override

@@ -51,15 +51,20 @@ public class WorkCell implements Workstation {
       return Status.PROCESSING;
    }
 
-   public long evalProcess(long i){
-      if (this.getStatus() != Status.PROCESSING
-            && this.getStatus() != Status.BLOCKED)
-         return 0l;
+   public long evalProcess(long i) {
+      Status status = this.getStatus();
+      if (status != Status.PROCESSING
+            && status != Status.BLOCKED)
+         return 0;
       return Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
    }
 
    public long process(long i) {
-      long processTime = evalProcess(i);
+      Status status = this.getStatus();
+      if (status != Status.PROCESSING
+            && status != Status.BLOCKED)
+         return 0;
+      long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
       currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime()) {
          this.latestOperation = currentOperation;
