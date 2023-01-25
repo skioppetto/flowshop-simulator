@@ -1,7 +1,9 @@
 package com.flowshop;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -35,7 +37,8 @@ public class WorkCell implements Workstation {
 
    public int getRequiredOperators() {
       Status status = getStatus();
-      return (status == Status.IDLE || status == Status.BLOCKED) ? 0 : currentOperation.getRequiredOperators();
+      return (status == Status.IDLE || status == Status.BLOCKED) ? 0
+            : (currentOperation.getRequiredOperators() - getAssignedOperators());
    }
 
    public Status getStatus() {
@@ -48,11 +51,15 @@ public class WorkCell implements Workstation {
       return Status.PROCESSING;
    }
 
-   public long process(long i) {
+   public long evalProcess(long i){
       if (this.getStatus() != Status.PROCESSING
             && this.getStatus() != Status.BLOCKED)
          return 0l;
-      long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
+      return Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
+   }
+
+   public long process(long i) {
+      long processTime = evalProcess(i);
       currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime()) {
          this.latestOperation = currentOperation;
@@ -83,9 +90,17 @@ public class WorkCell implements Workstation {
       return false;
    }
 
-   public void assignOperators(Operator... operators) {
-      for (Operator operator : operators)
-         assignedOperators.add(operator);
+   public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
+      Set<Operator> returnAssigned = new HashSet<>();
+      if (this.getStatus().equals(Status.WAITING_FOR_OPERATOR) && operators.size() >= getRequiredOperators()) {
+         Iterator<? extends Operator> operatorsIt = operators.iterator();
+         while (operatorsIt.hasNext() && getRequiredOperators() > 0) {
+            Operator op = operatorsIt.next();
+            if (assignedOperators.add(op))
+               returnAssigned.add(op);
+         }
+      }
+      return returnAssigned;
    }
 
    public Set<Operator> unassignOperators() {

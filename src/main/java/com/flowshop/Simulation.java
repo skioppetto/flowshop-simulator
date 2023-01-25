@@ -67,14 +67,7 @@ public class Simulation {
 
    // this method will work with single workstations
    private void assignOperators(Workstation workstation) {
-      // Operation assignedOperation = workstation.getCurrentOperation();
-      while (!this.availableOperators.isEmpty()
-            && workstation.getAssignedOperators() < workstation.getRequiredOperators()) {
-         Operator op = this.availableOperators.iterator().next();
-         workstation.assignOperators(op);
-         this.assignedOperators.add(op);
-         this.availableOperators.remove(op);
-      }
+      this.availableOperators.removeAll(workstation.assignOperators(availableOperators));
    }
 
    // this method will work with single workstations

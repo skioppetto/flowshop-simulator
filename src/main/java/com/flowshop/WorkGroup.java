@@ -1,6 +1,7 @@
 package com.flowshop;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
@@ -21,62 +22,70 @@ public class WorkGroup implements Workstation {
             workCell.assignOperation(op);
             return true;
          }
-
       }
       return false;
    }
 
    @Override
-   public Object getStatus() {
-      // TODO Auto-generated method stub
-      return null;
+   public WorkCell.Status getStatus() {
+      for (WorkCell workCell : workCells) {
+         if (!workCell.getStatus().equals(WorkCell.Status.PROCESSING))
+            return workCell.getStatus();
+      }
+      return WorkCell.Status.PROCESSING;
    }
 
    @Override
    public long process(long i) {
-      // TODO Auto-generated method stub
-      return 0;
+      long minProcessTime = 0;
+      for (WorkCell workCell : workCells) {
+         long processTime = workCell.evalProcess(i);
+         if (minProcessTime == 0 || processTime < minProcessTime)
+            minProcessTime = processTime;
+      }
+      for (WorkCell workCell : workCells) {
+         workCell.process(minProcessTime);
+      }
+      return minProcessTime;
    }
 
    @Override
    public boolean evalBlockedStatus() {
-      // TODO Auto-generated method stub
+      for (WorkCell workCell : workCells) {
+         if (workCell.evalBlockedStatus())
+            return true;
+      }
       return false;
    }
 
    @Override
    public int getAssignedOperators() {
-      // TODO Auto-generated method stub
-      return 0;
+      return workCells.stream().mapToInt(workCell -> workCell.getAssignedOperators()).sum();
    }
 
    @Override
    public int getRequiredOperators() {
-      return workCells.stream()
-            .filter(workCell -> workCell.getStatus().equals(WorkCell.Status.WAITING_FOR_OPERATOR))
-            .mapToInt(workCell -> (workCell.getRequiredOperators() - workCell.getAssignedOperators())).sum();
+      return workCells.stream().mapToInt(workCell -> workCell.getRequiredOperators()).sum();
    }
 
    @Override
-   // TODO: I should return a set with all the really assigned operators as some of
-   // them could remain available.
-   public void assignOperators(Operator... op) {
-      int opCount = 0;
-      List<WorkCell> cellsWaiting = workCells.stream()
-            .filter(workCell -> workCell.getStatus().equals(WorkCell.Status.WAITING_FOR_OPERATOR)).toList();
-      for (WorkCell workCell : cellsWaiting) {
-         while (opCount < op.length && workCell.getAssignedOperators() < workCell.getRequiredOperators()) {
-            workCell.assignOperators(op[opCount++]);
-         }
+   public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
+      Set<Operator> assignedSet = new HashSet<>();
+      Set<Operator> remainSet = new HashSet<>(operators);
+      for (WorkCell workCell : getWorkCells()) {
+         Set<Operator> cellAssignedSet = workCell.assignOperators(remainSet);
+         remainSet.removeAll(cellAssignedSet);
+         assignedSet.addAll(cellAssignedSet);
       }
+      return assignedSet;
    }
 
    @Override
    public Set<Operator> unassignOperators() {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   private void assignOperators(WorkCell workcell) {
+      Set<Operator> unassignedSet = new HashSet<>();
+      for (WorkCell workCell : getWorkCells()) {
+         unassignedSet.addAll(workCell.unassignOperators());
+      }
+      return unassignedSet;
    }
 }

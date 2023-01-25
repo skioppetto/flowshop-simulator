@@ -1,5 +1,6 @@
 package com.flowshop;
 
+import java.util.Collection;
 import java.util.Set;
 
 public interface Workstation {
@@ -16,7 +17,7 @@ public interface Workstation {
 
    int getRequiredOperators();
 
-   void assignOperators(Operator... op);
+   Set<Operator> assignOperators(Collection<? extends Operator> operators);
 
    Set<Operator> unassignOperators();
 
