@@ -17,6 +17,19 @@ public class Operation {
    @ToString.Exclude
    private final Operation nextOperation;
 
+   public Operation(String id, long cycleTime, Workstation requiredWorkstation, Operation nextOperation,
+         int requiredOperators) {
+      this(id, cycleTime, requiredWorkstation, nextOperation);
+      this.requiredOperators = requiredOperators;
+   }
+
+   public Operation(String id, long cycleTime, Workstation requiredWorkstation, Operation nextOperation) {
+      this.id = id;
+      this.cycleTime = cycleTime;
+      this.requiredWorkstation = requiredWorkstation;
+      this.nextOperation = nextOperation;
+   }
+
    public Status getStatus() {
       if (processedTime == 0)
          return Status.TODO;

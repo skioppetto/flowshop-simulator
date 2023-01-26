@@ -1,8 +1,12 @@
 package com.flowshop;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import com.flowshop.WorkCell.Status;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +30,22 @@ public class WorkGroup implements Workstation {
       return false;
    }
 
+   static Map<WorkCell.Status, Integer> statusWeights = new HashMap<>();
+   static {
+      statusWeights.put(Status.IDLE, 1);
+      statusWeights.put(Status.WAITING_FOR_OPERATOR, 2);
+      statusWeights.put(Status.BLOCKED, 3);
+      statusWeights.put(Status.PROCESSING, 4);
+   }
+
    @Override
    public WorkCell.Status getStatus() {
+      Status lower = Status.PROCESSING;
       for (WorkCell workCell : workCells) {
-         if (!workCell.getStatus().equals(WorkCell.Status.PROCESSING))
-            return workCell.getStatus();
+         if (statusWeights.get(workCell.getStatus()) < statusWeights.get(lower))
+            lower = workCell.getStatus();
       }
-      return WorkCell.Status.PROCESSING;
+      return lower;
    }
 
    @Override
