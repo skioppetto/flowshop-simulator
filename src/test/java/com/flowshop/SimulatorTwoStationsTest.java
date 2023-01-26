@@ -23,8 +23,8 @@ public class SimulatorTwoStationsTest {
       // the second workstation is idle
       assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
 
-      // TODO: ony the first operation of the first order should be in progress -->
-      // create a new status when the opearation is ready to run on the workstation,
+      // the first operation of the first order should be in progress -->
+      // TODO: create a new status when the opearation is ready to run on the workstation,
       // look at currentOperation equal to the operation and processed time is equal
       // to 0
       assertEquals(Operation.Status.TODO, ord1.getOperations().get(0).getStatus());

@@ -15,8 +15,7 @@ public class Simulation {
    private final Set<Workstation> workstations = new HashSet<>();
    @Getter
    private final Set<Operator> availableOperators = new HashSet<>();
-   private final Set<Operator> assignedOperators = new HashSet<>();
-
+   
    public Simulation(List<Order> orders, Collection<? extends Operator> operators) {
       this(orders);
       this.availableOperators.addAll(operators);
@@ -35,8 +34,6 @@ public class Simulation {
       for (Order order : orders) {
          Operation firstOperation = order.getOperations().get(0);
          Workstation workstation = firstOperation.getRequiredWorkstation();
-         // TODO: what happen if the workstation is in reality is a workgroup?
-         // currentOperation should be bind to each workstation within the group
          if (workstation.assignOperation(firstOperation)) {
             assignOperators(workstation);
          }

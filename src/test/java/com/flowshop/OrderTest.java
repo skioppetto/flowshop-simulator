@@ -9,13 +9,6 @@ import org.junit.jupiter.api.Test;
 
 public class OrderTest {
 
-   // an order is a list of operations that must be performed in a strict order.
-   // I can ask to an order to get the next TODO operation: in this case I'll get
-   // null if there are no more operations to process or if the current operation
-   // is in PROGRESS
-   // order has also a status: it can be TODO, PROGRESS or DONE based on the number
-   // of operations DONE
-
    @Test
    void statusTodo() {
       Operation op2 = new Operation("op2", 10, null, null);
