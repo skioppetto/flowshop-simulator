@@ -7,7 +7,7 @@ public interface Workstation {
 
    boolean assignOperation(Operation op);
 
-   Object getStatus();
+   WorkCell.Status getStatus();
 
    long process(long i);
 
