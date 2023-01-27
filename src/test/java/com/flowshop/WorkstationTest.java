@@ -312,4 +312,71 @@ public class WorkstationTest {
       assertEquals(0, wst.getAssignedOperators());
    }
 
+   @Test
+   void getOperationStatusToDo() {
+      WorkCell wst = new WorkCell("wst");
+      Operation op = new Operation("operation", 10, wst, null);
+      wst.assignOperation(op);
+      assertEquals(Operation.Status.TODO, op.getStatus());
+   }
+
+   @Test
+   void getOperationStatusProgress() {
+      WorkCell wst = new WorkCell("wst");
+      Operation op = new Operation("operation", 10, wst, null);
+      wst.assignOperation(op);
+      wst.process(5);
+      assertEquals(Operation.Status.PROGRESS, op.getStatus());
+   }
+
+   @Test
+   void getOperationStatusDone() {
+      WorkCell wst = new WorkCell("wst");
+      Operation op = new Operation("operation", 10, wst, null);
+      wst.assignOperation(op);
+      wst.process(10);
+      assertEquals(Operation.Status.DONE, op.getStatus());
+   }
+
+   @Test
+   void getOperationBlocked() {
+      WorkCell wst2 = new WorkCell("wst2");
+      Operation op2 = new Operation("operation", 20, wst2, null);
+      wst2.assignOperation(op2);
+
+      WorkCell wst1 = new WorkCell("wst1");
+      Operation op1 = new Operation("operation1", 10, wst1, op2);
+      wst1.assignOperation(op1);
+
+      wst1.process(10);
+      wst2.process(10);
+      wst1.evalBlockedStatus();
+      wst2.evalBlockedStatus();
+      assertEquals(Operation.Status.BLOCKED, op1.getStatus());
+   }
+
+   @Test
+   void getOperationUnBlocked() {
+      WorkCell wst2 = new WorkCell("wst2");
+      Operation op2 = new Operation("operation", 20, wst2, null);
+      wst2.assignOperation(op2);
+
+      WorkCell wst1 = new WorkCell("wst1");
+      Operation op1 = new Operation("operation1", 10, wst1, op2);
+      wst1.assignOperation(op1);
+
+      wst1.process(10);
+      wst2.process(10);
+      wst1.evalBlockedStatus();
+      wst2.evalBlockedStatus();
+      assertEquals(Operation.Status.BLOCKED, op1.getStatus());
+
+      wst2.process(10);
+      wst1.evalBlockedStatus();
+      wst2.evalBlockedStatus();
+      assertEquals(Operation.Status.DONE, op1.getStatus());
+
+
+   }
+
 }

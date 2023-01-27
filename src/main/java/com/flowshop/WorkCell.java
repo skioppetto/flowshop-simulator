@@ -76,8 +76,10 @@ public class WorkCell implements Workstation {
    // this method should be called after all workstations are processed
    public boolean evalBlockedStatus() {
       boolean isBlocked = wasBlocked();
+      if (latestOperation != null)
+         latestOperation.setBlocked(isBlocked);
       if (isBlocked)
-         this.currentOperation = this.latestOperation;
+         currentOperation = latestOperation;
       return isBlocked;
    }
 

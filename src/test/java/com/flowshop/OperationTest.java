@@ -34,4 +34,12 @@ public class OperationTest {
       assertEquals(0, op.getRequiredOperators());
    }
 
+   @Test
+   void statusBlocked() {
+      Operation op = new Operation("opId", 100l, null, null);
+      op.setProcessedTime(100);
+      op.setBlocked(true);
+      assertEquals(Operation.Status.BLOCKED, op.getStatus());
+   }
+
 }

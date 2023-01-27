@@ -6,7 +6,7 @@ import lombok.ToString;
 @Data
 public class Operation {
    public enum Status {
-      TODO, PROGRESS, DONE
+      TODO, PROGRESS, DONE, BLOCKED
    };
 
    private final String id;
@@ -16,6 +16,7 @@ public class Operation {
    private final Workstation requiredWorkstation;
    @ToString.Exclude
    private final Operation nextOperation;
+   private boolean blocked;
 
    public Operation(String id, long cycleTime, Workstation requiredWorkstation, Operation nextOperation,
          int requiredOperators) {
@@ -35,7 +36,9 @@ public class Operation {
          return Status.TODO;
       else if (processedTime < cycleTime)
          return Status.PROGRESS;
-      else
+      else if (!isBlocked())
          return Status.DONE;
+      else
+         return Status.BLOCKED;
    }
 }
