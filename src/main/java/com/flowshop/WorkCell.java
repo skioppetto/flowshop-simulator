@@ -128,6 +128,7 @@ public class WorkCell implements Workstation {
       Operation unassigned = currentOperation;
       unassigned.setBlocked(false);
       currentOperation = null;
+      latestOperation = null;
       return unassigned;
    }
 
