@@ -6,7 +6,7 @@ import java.util.Set;
 
 import lombok.Getter;
 
-public class BufferedWorkstation implements Workstation {
+public class BufferedWorkstation implements Workstation, SimObjectObserver {
 
    private final Workstation workstation;
    @Getter
@@ -56,7 +56,9 @@ public class BufferedWorkstation implements Workstation {
 
    public boolean assignOperation(Operation op) {
       boolean assignOperation = workstation.assignOperation(op);
-      if (!assignOperation && beforeBuffer.size() < beforeBufferMaxSize) {
+      if (assignOperation && op.getNextOperation() != null) {
+         op.getNextOperation().addSimObjectObserver(this);
+      } else if (!assignOperation && beforeBuffer.size() < beforeBufferMaxSize) {
          beforeBuffer.offer(op);
          return true;
       }
@@ -100,6 +102,17 @@ public class BufferedWorkstation implements Workstation {
 
    public Set<Operator> unassignOperators() {
       return workstation.unassignOperators();
+   }
+
+   @Override
+   public void onChange(ObservableSimObject observableSimObject) {
+      if (observableSimObject instanceof Operation) {
+         Operation nextOperation = (Operation) observableSimObject;
+         if (nextOperation.getStatus().equals(Operation.Status.PROGRESS)) {
+            afterBuffer.removeIf(op -> nextOperation.equals(op.getNextOperation()));
+            nextOperation.removeSimObjectObserver(this);
+         }
+      }
    }
 
 }
