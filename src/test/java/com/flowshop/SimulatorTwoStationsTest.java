@@ -80,7 +80,7 @@ public class SimulatorTwoStationsTest {
       // it won't be release in favour of the third order as the workstation is
       // blocked
       assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
-      assertEquals(Operation.Status.DONE, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.BLOCKED, ord2.getOperations().get(0).getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
 
       // second operation of first order should still be in processin on the second
@@ -112,7 +112,7 @@ public class SimulatorTwoStationsTest {
       // status
 
       assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
-      assertEquals(Operation.Status.DONE, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.BLOCKED, ord2.getOperations().get(0).getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
 
       assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
