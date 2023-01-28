@@ -1,9 +1,8 @@
 package com.flowshop;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Set;
-
-import com.flowshop.WorkstationBuffer.Type;
 
 import lombok.Getter;
 
@@ -15,9 +14,9 @@ public class BufferedWorkstation implements Workstation {
    @Getter
    private final int beforeBufferMaxSize;
    @Getter
-   private final WorkstationBuffer beforeBuffer = new WorkstationBuffer(Type.BEFORE, this);
+   private final LinkedList<Operation> beforeBuffer = new LinkedList<>();
    @Getter
-   private final WorkstationBuffer afterBuffer = new WorkstationBuffer(Type.AFTER, this);
+   private final LinkedList<Operation> afterBuffer = new LinkedList<>();
 
    public BufferedWorkstation(Workstation cell, int afterSize, int beforeSize) {
       this.workstation = cell;
