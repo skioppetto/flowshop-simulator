@@ -339,7 +339,7 @@ public class WorkstationTest {
    }
 
    @Test
-   void getOperationBlocked() {
+   void getOperationStatusBlocked() {
       WorkCell wst2 = new WorkCell("wst2");
       Operation op2 = new Operation("operation", 20, wst2, null);
       wst2.assignOperation(op2);
@@ -356,7 +356,7 @@ public class WorkstationTest {
    }
 
    @Test
-   void getOperationUnBlocked() {
+   void getOperationStatusUnBlocked() {
       WorkCell wst2 = new WorkCell("wst2");
       Operation op2 = new Operation("operation", 20, wst2, null);
       wst2.assignOperation(op2);
@@ -375,7 +375,17 @@ public class WorkstationTest {
       wst1.evalBlockedStatus();
       wst2.evalBlockedStatus();
       assertEquals(Operation.Status.DONE, op1.getStatus());
+   }
 
+   @Test
+   void unassignOperation() {
+      WorkCell wst2 = new WorkCell("wst2");
+      Operation op2 = new Operation("operation", 20, wst2, null);
+      wst2.assignOperation(op2);
+      wst2.process(10);
+      assertEquals(WorkCell.Status.PROCESSING, wst2.getStatus());
+      assertEquals(op2, wst2.unassignOperation());
+      assertEquals(WorkCell.Status.IDLE, wst2.getStatus());
 
    }
 
