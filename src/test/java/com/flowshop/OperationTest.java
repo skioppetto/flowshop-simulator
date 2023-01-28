@@ -1,7 +1,7 @@
 package com.flowshop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.easymock.EasyMock.*;
 import org.junit.jupiter.api.Test;
 
 public class OperationTest {
@@ -12,13 +12,13 @@ public class OperationTest {
       assertEquals(Operation.Status.TODO, op.getStatus());
    }
 
-
    @Test
    void statusProgressAfterStart() {
       Operation op = new Operation("opId", 100l, null, null);
       op.start();
       assertEquals(Operation.Status.PROGRESS, op.getStatus());
    }
+
    @Test
    void statusProgressAfterProcess() {
       Operation op = new Operation("opId", 100l, null, null);
@@ -47,6 +47,85 @@ public class OperationTest {
       op.setProcessedTime(100);
       op.setBlocked(true);
       assertEquals(Operation.Status.BLOCKED, op.getStatus());
+   }
+
+   @Test
+   void notifyOnStart() {
+      Operation op = new Operation("opId", 100l, null, null);
+      SimObjectObserver observerMock = mock(SimObjectObserver.class);
+      op.addSimObjectObserver(observerMock);
+
+      observerMock.onChange(op);
+      expectLastCall();
+      replay(observerMock);
+
+      op.start();
+
+      verify(observerMock);
+   }
+
+   @Test
+   void notifyOnProgress() {
+      Operation op = new Operation("opId", 100l, null, null);
+      SimObjectObserver observerMock = mock(SimObjectObserver.class);
+      op.addSimObjectObserver(observerMock);
+
+      observerMock.onChange(op);
+      expectLastCall().times(2);
+      replay(observerMock);
+
+      op.setProcessedTime(10);
+      op.setProcessedTime(20);
+
+      verify(observerMock);
+   }
+
+   @Test
+   void skipNotifyOnNoProgress() {
+      Operation op = new Operation("opId", 100l, null, null);
+      SimObjectObserver observerMock = mock(SimObjectObserver.class);
+      op.addSimObjectObserver(observerMock);
+
+      observerMock.onChange(op);
+      expectLastCall().once();
+      replay(observerMock);
+
+      op.setProcessedTime(10);
+      op.setProcessedTime(10);
+
+      verify(observerMock);
+   }
+
+   @Test
+   void notifyOnBlocked() {
+      Operation op = new Operation("opId", 100l, null, null);
+      SimObjectObserver observerMock = mock(SimObjectObserver.class);
+      op.addSimObjectObserver(observerMock);
+
+      observerMock.onChange(op);
+      expectLastCall().times(2);
+      replay(observerMock);
+
+      op.setBlocked(true);
+      op.setBlocked(false);
+
+      verify(observerMock);
+   }
+
+   @Test
+   void skipNotifyOnBlockedUnchanged() {
+      Operation op = new Operation("opId", 100l, null, null);
+      SimObjectObserver observerMock = mock(SimObjectObserver.class);
+      op.addSimObjectObserver(observerMock);
+
+      observerMock.onChange(op);
+      expectLastCall().once();
+      replay(observerMock);
+
+      op.setBlocked(true);
+      op.setBlocked(true);
+
+      verify(observerMock);
    }
 
 }

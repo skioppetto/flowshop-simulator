@@ -42,6 +42,12 @@
       <version>1.18.24</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>3.5.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -89,11 +95,11 @@
         <!-- <executions>
           <execution>
             <id>checkstyle</id>
-            <phase>validate</phase>
+        <phase>validate</phase>
             <goals>
               <goal>check</goal>
             </goals>
-          </execution>
+        </execution>
         </executions> -->
       </plugin>
       <plugin>
