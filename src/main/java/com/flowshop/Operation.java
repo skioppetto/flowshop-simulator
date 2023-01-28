@@ -12,7 +12,7 @@ public class Operation {
    private final String id;
    private int requiredOperators;
    private final long cycleTime;
-   private long processedTime = 0;
+   private long processedTime = -1;
    private final Workstation requiredWorkstation;
    @ToString.Exclude
    private final Operation nextOperation;
@@ -32,13 +32,17 @@ public class Operation {
    }
 
    public Status getStatus() {
-      if (processedTime == 0)
+      if (processedTime == -1)
          return Status.TODO;
-      else if (processedTime < cycleTime)
+      else if (processedTime >= 0 && processedTime < cycleTime)
          return Status.PROGRESS;
       else if (!isBlocked())
          return Status.DONE;
       else
          return Status.BLOCKED;
+   }
+
+   public void start() {
+      this.processedTime = 0l;
    }
 }

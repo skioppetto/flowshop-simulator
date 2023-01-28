@@ -12,8 +12,15 @@ public class OperationTest {
       assertEquals(Operation.Status.TODO, op.getStatus());
    }
 
+
    @Test
-   void statusProgress() {
+   void statusProgressAfterStart() {
+      Operation op = new Operation("opId", 100l, null, null);
+      op.start();
+      assertEquals(Operation.Status.PROGRESS, op.getStatus());
+   }
+   @Test
+   void statusProgressAfterProcess() {
       Operation op = new Operation("opId", 100l, null, null);
       op.setProcessedTime(20);
       assertEquals(Operation.Status.PROGRESS, op.getStatus());

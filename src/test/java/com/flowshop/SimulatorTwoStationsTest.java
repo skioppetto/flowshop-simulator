@@ -1,7 +1,9 @@
 package com.flowshop;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static com.flowshop.SimulatorTestUtils.buildOrder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -22,12 +24,7 @@ public class SimulatorTwoStationsTest {
 
       // the second workstation is idle
       assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
-
-      // the first operation of the first order should be in progress -->
-      // TODO: create a new status when the opearation is ready to run on the workstation,
-      // look at currentOperation equal to the operation and processed time is equal
-      // to 0
-      assertEquals(Operation.Status.TODO, ord1.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.PROGRESS, ord1.getOperations().get(0).getStatus());
 
       // all the other operations should be in TODO state
       Arrays.asList(ord1.getOperations().get(1), ord2.getOperations().get(0), ord2.getOperations().get(1),
@@ -46,22 +43,21 @@ public class SimulatorTwoStationsTest {
       sim.start(); // look at previous test for expected states
       sim.process(1);
 
-      // first workstation should be in processing as the first operation of the first
-      // order has finished and suddenly the first op of the second order should be
-      // run
+      // workstations
       assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
+      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+
+      // assigned operations
+      assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
 
-      // now it's time for processing the second operation of the fist order for the
-      // second workstation
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      // operation status
       assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
-      assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
-
-      Arrays.asList(ord1.getOperations().get(1), ord2.getOperations().get(0), ord2.getOperations().get(1),
-            ord3.getOperations().get(0), ord3.getOperations().get(1))
-            .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
+      assertEquals(Operation.Status.PROGRESS, ord1.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.PROGRESS, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord2.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
    }
 
    @Test
@@ -76,22 +72,21 @@ public class SimulatorTwoStationsTest {
       sim.process(1); // look at previous test for expected states
       sim.process(1);
 
-      // first operation of second order should be done on the first workstation but
-      // it won't be release in favour of the third order as the workstation is
-      // blocked
+      // workstations
       assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
-      assertEquals(Operation.Status.BLOCKED, ord2.getOperations().get(0).getStatus());
+      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+
+      // assigned operations
+      assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
 
-      // second operation of first order should still be in processin on the second
-      // workstation
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      // operation status
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
       assertEquals(Operation.Status.PROGRESS, ord1.getOperations().get(1).getStatus());
-      assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
-
-      Arrays.asList(ord2.getOperations().get(1), ord3.getOperations().get(0), ord3.getOperations().get(1))
-            .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
-
+      assertEquals(Operation.Status.BLOCKED, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord2.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
    }
 
    @Test
@@ -107,20 +102,21 @@ public class SimulatorTwoStationsTest {
       sim.process(1); // look at previous test for expected states
       sim.process(1);
 
-      // the same as before as second op of first order need another step
-      // TODO: suggest the time units to process until something change on the line
-      // status
-
+      // workstations
       assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
-      assertEquals(Operation.Status.BLOCKED, ord2.getOperations().get(0).getStatus());
+      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+
+      // assigned operations
+      assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      // operation status
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
       assertEquals(Operation.Status.PROGRESS, ord1.getOperations().get(1).getStatus());
-      assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
-
-      Arrays.asList(ord2.getOperations().get(1), ord3.getOperations().get(0), ord3.getOperations().get(1))
-            .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
+      assertEquals(Operation.Status.BLOCKED, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord2.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
    }
 
    @Test
@@ -137,16 +133,21 @@ public class SimulatorTwoStationsTest {
       sim.process(1); // look at previous test for expected states
       sim.process(1);
 
+      // workstations
       assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(Operation.Status.TODO, ord3.getOperations().get(0).getStatus());
+      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+
+      // assigned operations
+      assertEquals(ord2.getOperations().get(1), workstations[1].getCurrentOperation());
       assertEquals(ord3.getOperations().get(0), workstations[0].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
-      assertEquals(Operation.Status.TODO, ord2.getOperations().get(1).getStatus());
-      assertEquals(ord2.getOperations().get(1), workstations[1].getCurrentOperation());
-
-      Arrays.asList(ord3.getOperations().get(0), ord3.getOperations().get(1))
-            .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
+      // operation status
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.PROGRESS, ord2.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.PROGRESS, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
    }
 
    @Test
@@ -164,16 +165,21 @@ public class SimulatorTwoStationsTest {
       sim.process(1); // look at previous test for expected states
       sim.process(1);
 
+      // workstations
       assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(Operation.Status.PROGRESS, ord3.getOperations().get(0).getStatus());
+      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+
+      // assigned operations
+      assertNull(workstations[1].getCurrentOperation());
       assertEquals(ord3.getOperations().get(0), workstations[0].getCurrentOperation());
 
-      // now the second station is idle as second op of second order was finished
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+      // operation status
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(0).getStatus());
       assertEquals(Operation.Status.DONE, ord2.getOperations().get(1).getStatus());
-
-      Arrays.asList(ord3.getOperations().get(1))
-            .forEach(op -> assertEquals(Operation.Status.TODO, op.getStatus()));
+      assertEquals(Operation.Status.PROGRESS, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
    }
 
    @Test
@@ -192,12 +198,21 @@ public class SimulatorTwoStationsTest {
       sim.process(1); // look at previous test for expected states
       sim.process(1);
 
+      // workstations
       assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
-      assertEquals(Operation.Status.DONE, ord3.getOperations().get(0).getStatus());
-
       assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
-      assertEquals(Operation.Status.TODO, ord3.getOperations().get(1).getStatus());
+
+      // assigned operations
+      assertNull(workstations[0].getCurrentOperation());
       assertEquals(ord3.getOperations().get(1), workstations[1].getCurrentOperation());
+
+      // operation status
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.DONE, ord3.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.PROGRESS, ord3.getOperations().get(1).getStatus());
    }
 
    @Test
@@ -217,18 +232,22 @@ public class SimulatorTwoStationsTest {
       sim.process(1); // look at previous test for expected states
       sim.process(1);
 
+      // workstations
       assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
-      assertEquals(Operation.Status.DONE, ord3.getOperations().get(0).getStatus());
-
       assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+
+      // assigned operations
+      assertNull(workstations[0].getCurrentOperation());
+      assertNull(workstations[1].getCurrentOperation());
+
+      // operation status
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.DONE, ord1.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(0).getStatus());
+      assertEquals(Operation.Status.DONE, ord2.getOperations().get(1).getStatus());
+      assertEquals(Operation.Status.DONE, ord3.getOperations().get(0).getStatus());
       assertEquals(Operation.Status.DONE, ord3.getOperations().get(1).getStatus());
 
-      // all operations were closed successfully
-      for (Order order : sim.getOrders()) {
-         for (Operation operation : order.getOperations()) {
-            assertEquals(Operation.Status.DONE, operation.getStatus());
-         }
-      }
    }
 
 }

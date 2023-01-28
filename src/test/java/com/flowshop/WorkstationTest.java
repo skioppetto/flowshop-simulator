@@ -316,8 +316,15 @@ public class WorkstationTest {
    void getOperationStatusToDo() {
       WorkCell wst = new WorkCell("wst");
       Operation op = new Operation("operation", 10, wst, null);
-      wst.assignOperation(op);
       assertEquals(Operation.Status.TODO, op.getStatus());
+   }
+
+   @Test
+   void getOperationStatusStartProgress() {
+      WorkCell wst = new WorkCell("wst");
+      Operation op = new Operation("operation", 10, wst, null);
+      wst.assignOperation(op);
+      assertEquals(Operation.Status.PROGRESS, op.getStatus());
    }
 
    @Test

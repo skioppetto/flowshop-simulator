@@ -92,6 +92,7 @@ public class WorkCell implements Workstation {
    public boolean assignOperation(Operation op) {
       if (this.currentOperation == null) {
          this.currentOperation = op;
+         op.start();
          return true;
       }
       return false;
