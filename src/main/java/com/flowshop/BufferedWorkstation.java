@@ -71,11 +71,6 @@ public class BufferedWorkstation implements Workstation, SimObjectObserver {
 
    public long process(long i) {
       long processTime = workstation.process(i);
-      if (WorkCell.Status.IDLE.equals(workstation.getStatus())) {
-         Operation waitingOperation = beforeBuffer.poll();
-         if (null != waitingOperation)
-            workstation.assignOperation(waitingOperation);
-      }
       return processTime;
    }
 
@@ -84,7 +79,12 @@ public class BufferedWorkstation implements Workstation, SimObjectObserver {
       if (eval)
          // if I'm able to move all blocked operations to an after buffer the workstation
          // will no longer be blocked
-         return !tryMoveBlockedOperationsToBuffer();
+         eval = !tryMoveBlockedOperationsToBuffer();
+         // try to flush before buffer. This will happen if assign operation will permit it 
+      while (beforeBuffer.peek() != null) {
+         if (workstation.assignOperation(beforeBuffer.peek()))
+            beforeBuffer.poll();
+      }
       return eval;
    }
 
