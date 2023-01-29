@@ -48,6 +48,7 @@ public class BufferedWorkstationTest {
       assertEquals(1, bw.getBeforeBuffer().size());
       assertTrue(bw.getBeforeBuffer().contains(op2));
       bw.process(10);
+      bw.evalBlockedStatus();
       assertTrue(bw.getBeforeBuffer().isEmpty());
       assertEquals(op2, cell1.getCurrentOperation());
    }
@@ -61,6 +62,7 @@ public class BufferedWorkstationTest {
       assertTrue(bw.assignOperation(op1));
       assertTrue(bw.getBeforeBuffer().isEmpty());
       bw.process(10);
+      bw.evalBlockedStatus();
       assertNull(cell1.getCurrentOperation());
    }
 
@@ -75,6 +77,8 @@ public class BufferedWorkstationTest {
       cell2.assignOperation(op2);
       bw.process(10);
       cell2.process(10);
+      bw.evalBlockedStatus();
+      cell2.evalBlockedStatus();
       assertFalse(bw.evalBlockedStatus());
       assertFalse(cell2.evalBlockedStatus());
       assertEquals(1, bw.getAfterBuffer().size());

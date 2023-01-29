@@ -83,6 +83,13 @@ public class WorkCell implements Workstation {
       return isBlocked;
    }
 
+   // this method should be call if there are some other conditions different from
+   // the next operation status that can block the cell
+   public void forceBlocked() {
+      latestOperation.setBlocked(true);
+      currentOperation = latestOperation;
+   }
+
    private boolean wasBlocked() {
       return latestOperation != null && latestOperation.getNextOperation() != null
             && !latestOperation.getNextOperation().getRequiredWorkstation().getStatus()

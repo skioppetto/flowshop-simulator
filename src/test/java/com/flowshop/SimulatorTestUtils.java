@@ -3,7 +3,7 @@ package com.flowshop;
 import java.util.Arrays;
 
 public class SimulatorTestUtils {
-   
+
    public static Order buildOrder(String orderId, WorkCell[] workstations, long[] cycletimes) {
       Operation[] operations = new Operation[workstations.length];
       for (int i = workstations.length - 1; i >= 0; i--) {
@@ -12,6 +12,15 @@ public class SimulatorTestUtils {
       }
       return new Order(Arrays.asList(operations));
 
+   }
+
+   public static void simulateProcess (long processTime, Workstation... stations){
+      for (Workstation w : stations){
+         w.process(processTime);
+      }
+      for (Workstation w :stations){
+         w.evalBlockedStatus();
+      }
    }
 
 }
