@@ -77,20 +77,6 @@ public class WorkstationTest {
    }
 
    @Test
-   void getRequiredOperatorsIdle() {
-      WorkCell wst = new WorkCell("wst");
-      assertEquals(0, wst.getRequiredOperators());
-   }
-
-   @Test
-   void getRequiredOperatorsWaitingForOperators() {
-      WorkCell wst = new WorkCell("wst");
-      Operation op1 = new Operation("operation1", 10, wst, null, 10);
-      wst.assignOperation(op1);
-      assertEquals(10, wst.getRequiredOperators());
-   }
-
-   @Test
    void evalBlockedStatus() {
       WorkCell wst2 = new WorkCell("wst2");
       Operation op2 = new Operation("operation", 20, wst2, null);
@@ -113,24 +99,6 @@ public class WorkstationTest {
       wst.assignOperation(op);
       wst.process(10);
       assertEquals(op, wst.getLatestOperation());
-   }
-
-   @Test
-   void getRequiredOperatorsBlocked() {
-      WorkCell wst2 = new WorkCell("wst2");
-      Operation op2 = new Operation("operation", 20, wst2, null);
-      wst2.assignOperation(op2);
-
-      WorkCell wst1 = new WorkCell("wst1");
-      Operation op1 = new Operation("operation1", 10, wst1, op2);
-      wst1.assignOperation(op1);
-
-      wst1.process(10);
-      wst2.process(10);
-      wst1.evalBlockedStatus();
-      wst2.evalBlockedStatus();
-
-      assertEquals(0, wst1.getRequiredOperators());
    }
 
    @Test

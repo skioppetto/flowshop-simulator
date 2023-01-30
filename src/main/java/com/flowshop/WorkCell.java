@@ -35,12 +35,6 @@ public class WorkCell implements Workstation {
    @Getter(value = AccessLevel.PACKAGE)
    private Operation latestOperation;
 
-   public int getRequiredOperators() {
-      Status status = getStatus();
-      return (status == Status.IDLE || status == Status.BLOCKED) ? 0
-            : (currentOperation.getRequiredOperators() - getAssignedOperators());
-   }
-
    public Status getStatus() {
       if (null == currentOperation)
          return Status.IDLE;
@@ -107,9 +101,10 @@ public class WorkCell implements Workstation {
 
    public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
       Set<Operator> returnAssigned = new HashSet<>();
-      if (this.getStatus().equals(Status.WAITING_FOR_OPERATOR) && operators.size() >= getRequiredOperators()) {
+      if (this.getStatus().equals(Status.WAITING_FOR_OPERATOR)
+            && operators.size() >= currentOperation.getRequiredOperators()) {
          Iterator<? extends Operator> operatorsIt = operators.iterator();
-         while (operatorsIt.hasNext() && getRequiredOperators() > 0) {
+         while (operatorsIt.hasNext() && currentOperation.getRequiredOperators() > assignedOperators.size()) {
             Operator op = operatorsIt.next();
             if (assignedOperators.add(op))
                returnAssigned.add(op);

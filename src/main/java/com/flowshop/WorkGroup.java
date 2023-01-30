@@ -118,11 +118,6 @@ public class WorkGroup implements Workstation {
    }
 
    @Override
-   public int getRequiredOperators() {
-      return workCells.stream().mapToInt(workCell -> workCell.getRequiredOperators()).sum();
-   }
-
-   @Override
    public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
       Set<Operator> assignedSet = new HashSet<>();
       Set<Operator> remainSet = new HashSet<>(operators);
