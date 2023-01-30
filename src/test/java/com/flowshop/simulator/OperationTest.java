@@ -1,7 +1,11 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.easymock.EasyMock.*;
+
 import org.junit.jupiter.api.Test;
 
 public class OperationTest {

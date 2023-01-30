@@ -1,4 +1,4 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
 import java.util.ArrayList;
 import java.util.HashSet;

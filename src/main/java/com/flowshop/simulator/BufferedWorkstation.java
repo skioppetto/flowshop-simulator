@@ -1,4 +1,4 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -86,10 +86,6 @@ public class BufferedWorkstation implements Workstation, SimObjectObserver {
             beforeBuffer.poll();
       }
       return eval;
-   }
-
-   public int getAssignedOperators() {
-      return workstation.getAssignedOperators();
    }
 
    public Set<Operator> assignOperators(Collection<? extends Operator> operators) {

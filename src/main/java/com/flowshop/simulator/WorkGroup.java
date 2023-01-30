@@ -1,4 +1,4 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.flowshop.WorkCell.Status;
+import com.flowshop.simulator.WorkCell.Status;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -110,11 +110,6 @@ public class WorkGroup implements Workstation {
          }
       }
       return evalBlocked;
-   }
-
-   @Override
-   public int getAssignedOperators() {
-      return workCells.stream().mapToInt(workCell -> workCell.getAssignedOperators()).sum();
    }
 
    @Override
