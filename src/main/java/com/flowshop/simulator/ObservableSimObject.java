@@ -16,7 +16,7 @@ public abstract class ObservableSimObject {
       this.observers.add(observer);
    }
 
-   public void notifySimObjectObservers() {
+   protected void notifySimObjectObservers() {
       runningNotification = true;
       Iterator<SimObjectObserver> observerIt = observers.iterator();
       while (observerIt.hasNext())
