@@ -1,4 +1,4 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
 public interface SimObjectObserver {
 

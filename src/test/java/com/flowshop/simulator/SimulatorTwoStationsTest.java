@@ -1,6 +1,6 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
-import static com.flowshop.SimulatorTestUtils.buildOrder;
+import static com.flowshop.simulator.SimulatorTestUtils.buildOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 

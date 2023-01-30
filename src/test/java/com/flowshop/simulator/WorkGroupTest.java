@@ -1,9 +1,10 @@
-package com.flowshop;
+package com.flowshop.simulator;
 
+import static com.flowshop.simulator.SimulatorTestUtils.simulateProcess;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static com.flowshop.SimulatorTestUtils.simulateProcess;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
