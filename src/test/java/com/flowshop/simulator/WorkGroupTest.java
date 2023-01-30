@@ -443,28 +443,4 @@ public class WorkGroupTest {
       simulateProcess(10, group);
       assertTrue(group.unassignOperators().isEmpty());
    }
-
-   @Test
-   void getAssignedOperators() {
-      WorkCell wst1 = new WorkCell("group.wst1");
-      WorkCell wst2 = new WorkCell("group.wst2");
-      WorkGroup group = new WorkGroup("group", new HashSet<>(Arrays.asList(wst1, wst2)));
-      Operation op1 = new Operation("operation1", 20, group, null, 1);
-      Operation op2 = new Operation("operation2", 20, group, null, 1);
-      group.assignOperation(op1);
-      group.assignOperation(op2);
-      Operator operator1 = new Operator("operator1");
-      Operator operator2 = new Operator("operator2");
-      group.assignOperators(Arrays.asList(operator1, operator2));
-      assertEquals(2, group.getAssignedOperators());
-   }
-
-   @Test
-   void getAssignedOperatorsIdle() {
-      WorkCell wst1 = new WorkCell("group.wst1");
-      WorkCell wst2 = new WorkCell("group.wst2");
-      WorkGroup group = new WorkGroup("group", new HashSet<>(Arrays.asList(wst1, wst2)));
-      assertEquals(0, group.getAssignedOperators());
-   }
-
 }
