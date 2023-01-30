@@ -173,10 +173,6 @@ public class WorkCell implements Workstation {
       return returnSet;
    }
 
-   public int getAssignedOperators() {
-      return assignedOperators.size();
-   }
-
    public Operation unassignOperation() {
       Operation unassigned = currentOperation;
       unassigned.setBlocked(false);

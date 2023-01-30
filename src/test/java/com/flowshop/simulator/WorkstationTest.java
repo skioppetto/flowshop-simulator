@@ -267,23 +267,6 @@ public class WorkstationTest {
    }
 
    @Test
-   void getAssignedOperators() {
-      WorkCell wst = new WorkCell("wst");
-      Operation op = new Operation("operation", 10, wst, null, 2);
-      Operator operator1 = new Operator("operator1");
-      Operator operator2 = new Operator("operator2");
-      wst.assignOperation(op);
-      wst.assignOperators(Arrays.asList(operator1, operator2));
-      assertEquals(2, wst.getAssignedOperators());
-   }
-
-   @Test
-   void getAssignedOperatorsIdle() {
-      WorkCell wst = new WorkCell("wst");
-      assertEquals(0, wst.getAssignedOperators());
-   }
-
-   @Test
    void getOperationStatusToDo() {
       WorkCell wst = new WorkCell("wst");
       Operation op = new Operation("operation", 10, wst, null);
