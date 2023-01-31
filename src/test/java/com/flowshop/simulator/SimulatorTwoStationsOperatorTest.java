@@ -25,8 +25,7 @@ public class SimulatorTwoStationsOperatorTest {
       // the first operation of the first order will be processed
       assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
       assertEquals(ord1.getOperations().get(0), workstations[0].getCurrentOperation());
-      assertEquals(1, workstations[0].getAssignedOperators());
-
+      
    }
 
    @Test
@@ -48,8 +47,7 @@ public class SimulatorTwoStationsOperatorTest {
       // second order? who knows?
       assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
-      assertEquals(1, workstations[0].getAssignedOperators());
-
+      
       assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, workstations[1].getStatus());
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
    }
@@ -69,8 +67,7 @@ public class SimulatorTwoStationsOperatorTest {
 
       assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
-      assertEquals(1, workstations[0].getAssignedOperators());
-
+      
       assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, workstations[1].getStatus());
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
 
@@ -97,8 +94,7 @@ public class SimulatorTwoStationsOperatorTest {
       // now the current operation is the one that was blocked
       assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
       assertEquals(ord2.getOperations().get(1), workstations[1].getCurrentOperation());
-      assertEquals(1, workstations[1].getAssignedOperators());
-
+      
       assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
    }
 

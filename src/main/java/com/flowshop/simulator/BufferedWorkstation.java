@@ -88,14 +88,6 @@ public class BufferedWorkstation implements Workstation, SimObjectObserver {
       return eval;
    }
 
-   public int getAssignedOperators() {
-      return workstation.getAssignedOperators();
-   }
-
-   public int getRequiredOperators() {
-      return workstation.getRequiredOperators();
-   }
-
    public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
       return workstation.assignOperators(operators);
    }

@@ -12,6 +12,13 @@ public class WorkstationOperatorsSet extends HashSet<Operator> {
       this.workstation = workstation;
    }
 
+   public WorkstationOperatorsSet(WorkCell workstation, Collection<? extends Operator> collection) {
+      super(collection);
+      this.workstation = workstation;
+      for (Operator op : collection)
+         op.setAssignedWorkstation(workstation);
+   }
+
    @Override
    public boolean add(Operator operator) {
       operator.setAssignedWorkstation(workstation);
@@ -42,5 +49,4 @@ public class WorkstationOperatorsSet extends HashSet<Operator> {
       super.clear();
    }
 
-   
 }

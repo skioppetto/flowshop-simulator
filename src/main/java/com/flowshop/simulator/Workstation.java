@@ -13,10 +13,6 @@ public interface Workstation {
 
    boolean evalBlockedStatus();
 
-   int getAssignedOperators();
-
-   int getRequiredOperators();
-
    Set<Operator> assignOperators(Collection<? extends Operator> operators);
 
    Set<Operator> unassignOperators();

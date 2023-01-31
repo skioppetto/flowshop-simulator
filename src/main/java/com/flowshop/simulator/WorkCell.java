@@ -1,9 +1,12 @@
 package com.flowshop.simulator;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -32,19 +35,32 @@ public class WorkCell implements Workstation {
    private Set<Operator> assignedOperators = new WorkstationOperatorsSet(this);
 
    @ToString.Exclude
+   private Map<String, Set<Operator>> assignedOperatorsGroups = new HashMap<>();
+
+   @ToString.Exclude
    @Getter(value = AccessLevel.PACKAGE)
    private Operation latestOperation;
 
-   public int getRequiredOperators() {
-      Status status = getStatus();
-      return (status == Status.IDLE || status == Status.BLOCKED) ? 0
-            : (currentOperation.getRequiredOperators() - getAssignedOperators());
+   private int calculateOperationRequiredOperators() {
+      if (currentOperation == null)
+         return 0;
+      int requiredOperators = currentOperation.getRequiredOperators();
+      for (int operatorsPerGroup : currentOperation.getRequiredOperatorsGroups().values())
+         requiredOperators += operatorsPerGroup;
+      return requiredOperators;
+   }
+
+   private int calculateAssignedOperators() {
+      int assignedOperatorsCount = assignedOperators.size();
+      for (Set<Operator> operatorsGroup : assignedOperatorsGroups.values())
+         assignedOperatorsCount += operatorsGroup.size();
+      return assignedOperatorsCount;
    }
 
    public Status getStatus() {
       if (null == currentOperation)
          return Status.IDLE;
-      if (assignedOperators.size() < currentOperation.getRequiredOperators())
+      if (calculateAssignedOperators() < calculateOperationRequiredOperators())
          return Status.WAITING_FOR_OPERATOR;
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime())
          return Status.BLOCKED;
@@ -107,28 +123,54 @@ public class WorkCell implements Workstation {
 
    public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
       Set<Operator> returnAssigned = new HashSet<>();
-      if (this.getStatus().equals(Status.WAITING_FOR_OPERATOR) && operators.size() >= getRequiredOperators()) {
+      if (this.getStatus().equals(Status.WAITING_FOR_OPERATOR)
+            && operators.size() >= calculateOperationRequiredOperators()) {
          Iterator<? extends Operator> operatorsIt = operators.iterator();
-         while (operatorsIt.hasNext() && getRequiredOperators() > 0) {
+         while (operatorsIt.hasNext() && calculateOperationRequiredOperators() > calculateAssignedOperators()) {
             Operator op = operatorsIt.next();
-            if (assignedOperators.add(op))
+            // check first operators groups requirements
+            if (op.getGroup() != null && currentOperation.getRequiredOperatorsGroups().containsKey(op.getGroup())) {
+               if (assignedOperatorsGroups.containsKey(op.getGroup())) {
+                  if (assignedOperatorsGroups.get(op.getGroup()).size() < currentOperation.getRequiredOperatorsGroups()
+                        .get(op.getGroup())) {
+                     if (assignedOperatorsGroups.get(op.getGroup()).add(op))
+                        returnAssigned.add(op);
+                  }
+               } else {
+                  assignedOperatorsGroups.put(op.getGroup(), new WorkstationOperatorsSet(this, Arrays.asList(op)));
+                  returnAssigned.add(op);
+               }
+            }
+            // if operator wasn't assigned to a group (it's not present in returnAssigned)
+            // and current operation require generic operators assign to this group
+            if (!returnAssigned.contains(op) && assignedOperators.size() < currentOperation.getRequiredOperators()
+                  && assignedOperators.add(op))
                returnAssigned.add(op);
          }
+      }
+      // if assigned operators are not enough for this operation clear all so they
+      // will be available for other workstations
+      if (calculateOperationRequiredOperators() > calculateAssignedOperators()) {
+         returnAssigned.clear();
+         for (Set<Operator> group : assignedOperatorsGroups.values())
+            group.clear();
+         assignedOperatorsGroups.clear();
+         assignedOperators.clear();
       }
       return returnAssigned;
    }
 
    public Set<Operator> unassignOperators() {
-      if (this.getStatus().equals(Status.PROCESSING) || assignedOperators.isEmpty())
+      if (this.getStatus().equals(Status.PROCESSING))
          return Collections.emptySet();
       HashSet<Operator> returnSet = new HashSet<>(assignedOperators);
       assignedOperators.clear();
+      for (Set<Operator> operatorsGroup : assignedOperatorsGroups.values()) {
+         returnSet.addAll(operatorsGroup);
+         operatorsGroup.clear();
+      }
+      assignedOperatorsGroups.clear();
       return returnSet;
-
-   }
-
-   public int getAssignedOperators() {
-      return assignedOperators.size();
    }
 
    public Operation unassignOperation() {

@@ -1,5 +1,8 @@
 package com.flowshop.simulator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +17,8 @@ public class Operation extends ObservableSimObject {
    @Getter
    @Setter
    private int requiredOperators;
+   @Getter
+   private final Map<String, Integer> requiredOperatorsGroups = new HashMap<>();
    @Getter
    private final long cycleTime;
    @Getter

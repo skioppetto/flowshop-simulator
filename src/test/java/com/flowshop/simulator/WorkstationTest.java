@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -77,20 +80,6 @@ public class WorkstationTest {
    }
 
    @Test
-   void getRequiredOperatorsIdle() {
-      WorkCell wst = new WorkCell("wst");
-      assertEquals(0, wst.getRequiredOperators());
-   }
-
-   @Test
-   void getRequiredOperatorsWaitingForOperators() {
-      WorkCell wst = new WorkCell("wst");
-      Operation op1 = new Operation("operation1", 10, wst, null, 10);
-      wst.assignOperation(op1);
-      assertEquals(10, wst.getRequiredOperators());
-   }
-
-   @Test
    void evalBlockedStatus() {
       WorkCell wst2 = new WorkCell("wst2");
       Operation op2 = new Operation("operation", 20, wst2, null);
@@ -113,24 +102,6 @@ public class WorkstationTest {
       wst.assignOperation(op);
       wst.process(10);
       assertEquals(op, wst.getLatestOperation());
-   }
-
-   @Test
-   void getRequiredOperatorsBlocked() {
-      WorkCell wst2 = new WorkCell("wst2");
-      Operation op2 = new Operation("operation", 20, wst2, null);
-      wst2.assignOperation(op2);
-
-      WorkCell wst1 = new WorkCell("wst1");
-      Operation op1 = new Operation("operation1", 10, wst1, op2);
-      wst1.assignOperation(op1);
-
-      wst1.process(10);
-      wst2.process(10);
-      wst1.evalBlockedStatus();
-      wst2.evalBlockedStatus();
-
-      assertEquals(0, wst1.getRequiredOperators());
    }
 
    @Test
@@ -296,23 +267,6 @@ public class WorkstationTest {
    }
 
    @Test
-   void getAssignedOperators() {
-      WorkCell wst = new WorkCell("wst");
-      Operation op = new Operation("operation", 10, wst, null, 2);
-      Operator operator1 = new Operator("operator1");
-      Operator operator2 = new Operator("operator2");
-      wst.assignOperation(op);
-      wst.assignOperators(Arrays.asList(operator1, operator2));
-      assertEquals(2, wst.getAssignedOperators());
-   }
-
-   @Test
-   void getAssignedOperatorsIdle() {
-      WorkCell wst = new WorkCell("wst");
-      assertEquals(0, wst.getAssignedOperators());
-   }
-
-   @Test
    void getOperationStatusToDo() {
       WorkCell wst = new WorkCell("wst");
       Operation op = new Operation("operation", 10, wst, null);
@@ -394,6 +348,166 @@ public class WorkstationTest {
       assertEquals(op2, wst2.unassignOperation());
       assertEquals(WorkCell.Status.IDLE, wst2.getStatus());
 
+   }
+
+   @Test
+   void getStatusWaitingForOperatorGroupsRequirement() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      cell.assignOperation(op);
+      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, cell.getStatus());
+   }
+
+   @Test
+   void assignOperatorsGroupsRequirement() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      cell.assignOperation(op);
+      Operator op1 = new Operator("op1", "group1");
+      Operator op2 = new Operator("op2", "group1");
+      Operator op3 = new Operator("op3", "group2");
+      Set<Operator> assignee = new HashSet<>(Arrays.asList(op1, op2, op3));
+      Set<Operator> assigned = cell.assignOperators(assignee);
+      assertTrue(assigned.containsAll(assignee));
+      assertEquals(3, assigned.size());
+      assertEquals(cell, op1.getAssignedWorkstation());
+      assertEquals(cell, op2.getAssignedWorkstation());
+      assertEquals(cell, op3.getAssignedWorkstation());
+      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+   }
+
+   @Test
+   void assignOperatorsGroupsAndGenericRequirement() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      op.setRequiredOperators(2);
+      cell.assignOperation(op);
+      Operator op1 = new Operator("op1", "group1");
+      Operator op2 = new Operator("op2", "group1");
+      Operator op3 = new Operator("op3", "group2");
+      Operator op4 = new Operator("op4");
+      Operator op5 = new Operator("op5");
+      Set<Operator> assignee = new HashSet<>(Arrays.asList(op1, op2, op3, op4, op5));
+      Set<Operator> assigned = cell.assignOperators(assignee);
+      assertTrue(assigned.containsAll(assignee));
+      assertEquals(5, assigned.size());
+      assertEquals(cell, op1.getAssignedWorkstation());
+      assertEquals(cell, op2.getAssignedWorkstation());
+      assertEquals(cell, op3.getAssignedWorkstation());
+      assertEquals(cell, op4.getAssignedWorkstation());
+      assertEquals(cell, op5.getAssignedWorkstation());
+      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+   }
+
+   @Test
+   void assignOperatorsGroupsAndGenericRequirementUnusedGroupOperator() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      op.setRequiredOperators(2);
+      cell.assignOperation(op);
+      Operator op1 = new Operator("op1", "group1");
+      Operator op2 = new Operator("op2", "group1");
+      Operator op3 = new Operator("op3", "group2");
+      // this will be unused for group2 as it require only one operator and will be
+      // assigned to the generic group
+      Operator op4 = new Operator("op4", "group2");
+      Operator op5 = new Operator("op5");
+      Set<Operator> assignee = new HashSet<>(Arrays.asList(op1, op2, op3, op4, op5));
+      Set<Operator> assigned = cell.assignOperators(assignee);
+      assertTrue(assigned.containsAll(assignee));
+      assertEquals(5, assigned.size());
+      assertEquals(cell, op1.getAssignedWorkstation());
+      assertEquals(cell, op2.getAssignedWorkstation());
+      assertEquals(cell, op3.getAssignedWorkstation());
+      assertEquals(cell, op4.getAssignedWorkstation());
+      assertEquals(cell, op5.getAssignedWorkstation());
+      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+   }
+
+   @Test
+   void assignOperatorsGroupsAndGenericRequirementNotEnoughGroupOperator() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      op.setRequiredOperators(2);
+      cell.assignOperation(op);
+      // operation require 2 operators from group 1, assignee set contains only one.
+      // Nobody will be assigned to the workstation
+      Operator op1 = new Operator("op1", "group1");
+      Operator op2 = new Operator("op2", "group2");
+      Operator op3 = new Operator("op3", "group2");
+      Operator op4 = new Operator("op4", "group2");
+      Operator op5 = new Operator("op5");
+      Set<Operator> assignee = new HashSet<>(Arrays.asList(op1, op2, op3, op4, op5));
+      Set<Operator> assigned = cell.assignOperators(assignee);
+      assertTrue(assigned.isEmpty());
+      assertNull(op1.getAssignedWorkstation());
+      assertNull(op2.getAssignedWorkstation());
+      assertNull(op3.getAssignedWorkstation());
+      assertNull(op4.getAssignedWorkstation());
+      assertNull(op5.getAssignedWorkstation());
+      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, cell.getStatus());
+   }
+
+   @Test
+   void assignOperatorsWrongGroupsRequirement() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      cell.assignOperation(op);
+      Set<Operator> assignee = new HashSet<>();
+      assignee.add(new Operator("op1", "group2"));
+      assignee.add(new Operator("op2", "group2"));
+      assignee.add(new Operator("op3", "group2"));
+      Set<Operator> assigned = cell.assignOperators(assignee);
+      assertTrue(assigned.isEmpty());
+      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, cell.getStatus());
+   }
+
+   @Test
+   void unassignOperatorsGroups() {
+      WorkCell cell = new WorkCell("cell1");
+      Operation op = new Operation("op1", 10, cell, null);
+      op.getRequiredOperatorsGroups().put("group1", 2);
+      op.getRequiredOperatorsGroups().put("group2", 1);
+      op.setRequiredOperators(2);
+      cell.assignOperation(op);
+      Operator op1 = new Operator("op1", "group1");
+      Operator op2 = new Operator("op2", "group1");
+      Operator op3 = new Operator("op3", "group2");
+      // this will be unused for group2 as it require only one operator and will be
+      // assigned to the generic group
+      Operator op4 = new Operator("op4", "group2");
+      Operator op5 = new Operator("op5");
+      Set<Operator> assignee = new HashSet<>(Arrays.asList(op1, op2, op3, op4, op5));
+      Set<Operator> assigned = cell.assignOperators(assignee);
+      assertTrue(assigned.containsAll(assignee));
+      assertEquals(5, assigned.size());
+      assertEquals(cell, op1.getAssignedWorkstation());
+      assertEquals(cell, op2.getAssignedWorkstation());
+      assertEquals(cell, op3.getAssignedWorkstation());
+      assertEquals(cell, op4.getAssignedWorkstation());
+      assertEquals(cell, op5.getAssignedWorkstation());
+      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+      cell.process(10);
+      Set<Operator> unassigned = cell.unassignOperators();
+      assertTrue(unassigned.containsAll(assignee));
+      assertNull(op1.getAssignedWorkstation());
+      assertNull(op2.getAssignedWorkstation());
+      assertNull(op3.getAssignedWorkstation());
+      assertNull(op4.getAssignedWorkstation());
+      assertNull(op5.getAssignedWorkstation());
+      assertEquals(WorkCell.Status.IDLE, cell.getStatus());
    }
 
 }
