@@ -82,7 +82,9 @@ public class WorkCell extends Workstation {
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime()) {
          this.latestOperation = currentOperation;
          this.currentOperation = null;
+         
       }
+      notifySimObjectObservers();
       return processTime;
    }
 
@@ -91,8 +93,10 @@ public class WorkCell extends Workstation {
       boolean isBlocked = wasBlocked();
       if (latestOperation != null)
          latestOperation.setBlocked(isBlocked);
-      if (isBlocked)
+      if (isBlocked){
          currentOperation = latestOperation;
+      }
+      notifySimObjectObservers();
       return isBlocked;
    }
 
@@ -113,6 +117,7 @@ public class WorkCell extends Workstation {
       if (this.currentOperation == null) {
          this.currentOperation = op;
          op.start();
+         notifySimObjectObservers();
          return true;
       }
       return false;
@@ -153,6 +158,8 @@ public class WorkCell extends Workstation {
             group.clear();
          assignedOperatorsGroups.clear();
          assignedOperators.clear();
+      } else {
+         notifySimObjectObservers();
       }
       return returnAssigned;
    }

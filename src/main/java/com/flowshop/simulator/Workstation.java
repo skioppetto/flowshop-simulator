@@ -9,6 +9,8 @@ public abstract class Workstation extends ObservableSimObject{
       IDLE, WAITING_FOR_OPERATOR, PROCESSING, BLOCKED
    }
 
+   public abstract String getId();
+
    public abstract boolean assignOperation(Operation op);
 
    public abstract Workstation.Status getStatus();

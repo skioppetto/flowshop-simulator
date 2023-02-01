@@ -14,6 +14,7 @@ public abstract class ObservableSimObject {
 
    public void addSimObjectObserver(SimObjectObserver observer) {
       this.observers.add(observer);
+      observer.onAdded(this);
    }
 
    protected void notifySimObjectObservers() {

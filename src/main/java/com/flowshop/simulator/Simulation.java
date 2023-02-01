@@ -47,7 +47,7 @@ public class Simulation {
       // operators assigment priority to WAIT_FOR_OPERATOR workstation
       if (!this.availableOperators.isEmpty())
          workstations.stream().parallel()
-               .filter(workstation -> WorkCell.Status.WAITING_FOR_OPERATOR
+               .filter(workstation -> Workstation.Status.WAITING_FOR_OPERATOR
                      .equals(workstation.getStatus()))
                .forEach(this::assignOperators);
       // process all workstations

@@ -46,8 +46,8 @@ public class BufferedWorkgroupTest {
       assertEquals(Order.Status.TODO, ord4.getStatus());
 
       // workstations
-      assertEquals(WorkCell.Status.PROCESSING, grp1.getStatus());
-      assertEquals(WorkCell.Status.IDLE, wrk2.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, grp1.getStatus());
+      assertEquals(Workstation.Status.IDLE, wrk2.getStatus());
 
       // operations
       assertEquals(Operation.Status.PROGRESS, ord1.getOperations().get(0).getStatus());
@@ -77,8 +77,8 @@ public class BufferedWorkgroupTest {
       assertEquals(Order.Status.PROGRESS, ord4.getStatus());
 
       // workstations
-      assertEquals(WorkCell.Status.PROCESSING, grp1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, wrk2.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, grp1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, wrk2.getStatus());
 
       // operations
       assertEquals(Operation.Status.DONE, ord1.getOperations().get(0).getStatus());

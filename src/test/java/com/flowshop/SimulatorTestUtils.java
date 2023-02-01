@@ -1,6 +1,11 @@
-package com.flowshop.simulator;
+package com.flowshop;
 
 import java.util.Arrays;
+
+import com.flowshop.simulator.Operation;
+import com.flowshop.simulator.Order;
+import com.flowshop.simulator.WorkCell;
+import com.flowshop.simulator.Workstation;
 
 public class SimulatorTestUtils {
 

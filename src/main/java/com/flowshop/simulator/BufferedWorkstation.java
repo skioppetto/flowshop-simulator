@@ -28,7 +28,7 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
    // movement to buffer or if the workcell is blocked and the operation is
    // correctly moved to buffer
    private boolean tryMoveBlockedOperationToBuffer(WorkCell cell) {
-      if (!cell.getStatus().equals(WorkCell.Status.BLOCKED))
+      if (!cell.getStatus().equals(Workstation.Status.BLOCKED))
          return true;
       else if (afterBuffer.size() < afterBufferMaxSize) {
          afterBuffer.offer(cell.unassignOperation());
@@ -65,7 +65,7 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
       return assignOperation;
    }
 
-   public WorkCell.Status getStatus() {
+   public Workstation.Status getStatus() {
       return workstation.getStatus();
    }
 
@@ -107,5 +107,17 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
          }
       }
    }
+
+   @Override
+   public String getId() {
+      return workstation.getId();
+   }
+
+   @Override
+   public void onAdded(ObservableSimObject observableSimObject) {
+      
+   }
+
+   
 
 }

@@ -32,7 +32,7 @@ public class WorkstationTest {
    @Test
    void getStatusIdle() {
       WorkCell wst = new WorkCell("wst");
-      assertEquals(WorkCell.Status.IDLE, wst.getStatus());
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
    }
 
    @Test
@@ -40,7 +40,7 @@ public class WorkstationTest {
       WorkCell wst = new WorkCell("wst");
       Operation op = new Operation("operation", 10, wst, null, 2);
       wst.assignOperation(op);
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, wst.getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, wst.getStatus());
    }
 
    @Test
@@ -50,7 +50,7 @@ public class WorkstationTest {
       wst.assignOperation(op);
       Operator operator = new Operator("operator");
       wst.assignOperators(Arrays.asList(operator));
-      assertEquals(WorkCell.Status.PROCESSING, wst.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
    }
 
    @Test
@@ -58,7 +58,7 @@ public class WorkstationTest {
       WorkCell wst = new WorkCell("wst");
       Operation op = new Operation("operation", 10, wst, null);
       wst.assignOperation(op);
-      assertEquals(WorkCell.Status.PROCESSING, wst.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
    }
 
    @Test
@@ -76,7 +76,7 @@ public class WorkstationTest {
       wst1.evalBlockedStatus();
       wst2.evalBlockedStatus();
 
-      assertEquals(WorkCell.Status.BLOCKED, wst1.getStatus());
+      assertEquals(Workstation.Status.BLOCKED, wst1.getStatus());
    }
 
    @Test
@@ -124,7 +124,7 @@ public class WorkstationTest {
       Operation op = new Operation("operation", 10, wst, null);
       wst.assignOperation(op);
       assertEquals(5, wst.process(5));
-      assertEquals(WorkCell.Status.PROCESSING, wst.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, wst.getStatus());
    }
 
    @Test
@@ -133,7 +133,7 @@ public class WorkstationTest {
       Operation op = new Operation("operation", 10, wst, null);
       wst.assignOperation(op);
       assertEquals(10, wst.process(10));
-      assertEquals(WorkCell.Status.IDLE, wst.getStatus());
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
    }
 
    @Test
@@ -142,7 +142,7 @@ public class WorkstationTest {
       Operation op = new Operation("operation", 10, wst, null);
       wst.assignOperation(op);
       assertEquals(10, wst.process(20));
-      assertEquals(WorkCell.Status.IDLE, wst.getStatus());
+      assertEquals(Workstation.Status.IDLE, wst.getStatus());
    }
 
    @Test
@@ -344,9 +344,9 @@ public class WorkstationTest {
       Operation op2 = new Operation("operation", 20, wst2, null);
       wst2.assignOperation(op2);
       wst2.process(10);
-      assertEquals(WorkCell.Status.PROCESSING, wst2.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, wst2.getStatus());
       assertEquals(op2, wst2.unassignOperation());
-      assertEquals(WorkCell.Status.IDLE, wst2.getStatus());
+      assertEquals(Workstation.Status.IDLE, wst2.getStatus());
 
    }
 
@@ -357,7 +357,7 @@ public class WorkstationTest {
       op.getRequiredOperatorsGroups().put("group1", 2);
       op.getRequiredOperatorsGroups().put("group2", 1);
       cell.assignOperation(op);
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, cell.getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, cell.getStatus());
    }
 
    @Test
@@ -377,7 +377,7 @@ public class WorkstationTest {
       assertEquals(cell, op1.getAssignedWorkstation());
       assertEquals(cell, op2.getAssignedWorkstation());
       assertEquals(cell, op3.getAssignedWorkstation());
-      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell.getStatus());
    }
 
    @Test
@@ -402,7 +402,7 @@ public class WorkstationTest {
       assertEquals(cell, op3.getAssignedWorkstation());
       assertEquals(cell, op4.getAssignedWorkstation());
       assertEquals(cell, op5.getAssignedWorkstation());
-      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell.getStatus());
    }
 
    @Test
@@ -429,7 +429,7 @@ public class WorkstationTest {
       assertEquals(cell, op3.getAssignedWorkstation());
       assertEquals(cell, op4.getAssignedWorkstation());
       assertEquals(cell, op5.getAssignedWorkstation());
-      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell.getStatus());
    }
 
    @Test
@@ -455,7 +455,7 @@ public class WorkstationTest {
       assertNull(op3.getAssignedWorkstation());
       assertNull(op4.getAssignedWorkstation());
       assertNull(op5.getAssignedWorkstation());
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, cell.getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, cell.getStatus());
    }
 
    @Test
@@ -471,7 +471,7 @@ public class WorkstationTest {
       assignee.add(new Operator("op3", "group2"));
       Set<Operator> assigned = cell.assignOperators(assignee);
       assertTrue(assigned.isEmpty());
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, cell.getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, cell.getStatus());
    }
 
    @Test
@@ -498,7 +498,7 @@ public class WorkstationTest {
       assertEquals(cell, op3.getAssignedWorkstation());
       assertEquals(cell, op4.getAssignedWorkstation());
       assertEquals(cell, op5.getAssignedWorkstation());
-      assertEquals(WorkCell.Status.PROCESSING, cell.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell.getStatus());
       cell.process(10);
       Set<Operator> unassigned = cell.unassignOperators();
       assertTrue(unassigned.containsAll(assignee));
@@ -507,7 +507,7 @@ public class WorkstationTest {
       assertNull(op3.getAssignedWorkstation());
       assertNull(op4.getAssignedWorkstation());
       assertNull(op5.getAssignedWorkstation());
-      assertEquals(WorkCell.Status.IDLE, cell.getStatus());
+      assertEquals(Workstation.Status.IDLE, cell.getStatus());
    }
 
 }

@@ -1,6 +1,6 @@
 package com.flowshop.simulator;
 
-import static com.flowshop.simulator.SimulatorTestUtils.buildOrder;
+import static com.flowshop.SimulatorTestUtils.buildOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -20,10 +20,10 @@ public class SimulatorTwoStationsTest {
       sim.start();
 
       // only the first workstation should be in processing
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
 
       // the second workstation is idle
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
       assertEquals(Operation.Status.PROGRESS, ord1.getOperations().get(0).getStatus());
 
       // all the other operations should be in TODO state
@@ -44,8 +44,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
 
       // assigned operations
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
@@ -73,8 +73,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.BLOCKED, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
 
       // assigned operations
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
@@ -103,8 +103,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.BLOCKED, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
 
       // assigned operations
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
@@ -134,8 +134,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
 
       // assigned operations
       assertEquals(ord2.getOperations().get(1), workstations[1].getCurrentOperation());
@@ -166,8 +166,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
 
       // assigned operations
       assertNull(workstations[1].getCurrentOperation());
@@ -199,8 +199,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
 
       // assigned operations
       assertNull(workstations[0].getCurrentOperation());
@@ -233,8 +233,8 @@ public class SimulatorTwoStationsTest {
       sim.process(1);
 
       // workstations
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
 
       // assigned operations
       assertNull(workstations[0].getCurrentOperation());

@@ -1,6 +1,6 @@
 package com.flowshop.simulator;
 
-import static com.flowshop.simulator.SimulatorTestUtils.buildOrder;
+import static com.flowshop.SimulatorTestUtils.buildOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -20,11 +20,11 @@ public class SimulatorDifferentStartingPoints {
       Order ord2 = buildOrder("ord2", new WorkCell[] { workstations[1], workstations[2] }, new long[] { 3, 1 });
       Simulation sim = new Simulation(Arrays.asList(ord1, ord2));
       sim.start();
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
       assertEquals(ord1.getOperations().get(0), workstations[0].getCurrentOperation());
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[1].getCurrentOperation());
-      assertEquals(WorkCell.Status.IDLE, workstations[2].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[2].getStatus());
    }
 
    @Test
@@ -38,13 +38,13 @@ public class SimulatorDifferentStartingPoints {
       sim.process(1);
 
       // first station is blocked as the next station is still processing
-      assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
+      assertEquals(Workstation.Status.BLOCKED, workstations[0].getStatus());
       assertEquals(ord1.getOperations().get(0), workstations[0].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[1].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.IDLE, workstations[2].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[2].getStatus());
    }
 
    @Test
@@ -61,13 +61,13 @@ public class SimulatorDifferentStartingPoints {
 
       // first station is no more blocked as second station has finished, will be idle
       // as there are no other orders to process
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
       assertNull(workstations[0].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.PROCESSING, workstations[2].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[2].getStatus());
       assertEquals(ord2.getOperations().get(1), workstations[2].getCurrentOperation());
 
    }
@@ -87,13 +87,13 @@ public class SimulatorDifferentStartingPoints {
 
       // first station is no more blocked as second station has finished, will be idle
       // as there are no other orders to process
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
       assertNull(workstations[0].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
       assertNull(workstations[1].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.PROCESSING, workstations[2].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[2].getStatus());
       assertEquals(ord1.getOperations().get(2), workstations[2].getCurrentOperation());
 
    }
@@ -112,13 +112,13 @@ public class SimulatorDifferentStartingPoints {
       sim.process(1);
       sim.process(1);
 
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
       assertNull(workstations[0].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
       assertNull(workstations[1].getCurrentOperation());
 
-      assertEquals(WorkCell.Status.IDLE, workstations[2].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[2].getStatus());
       assertNull(workstations[2].getCurrentOperation());
 
    }
