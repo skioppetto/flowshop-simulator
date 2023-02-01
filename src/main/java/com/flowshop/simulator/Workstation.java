@@ -3,18 +3,21 @@ package com.flowshop.simulator;
 import java.util.Collection;
 import java.util.Set;
 
-public interface Workstation {
+public abstract class Workstation extends ObservableSimObject{
 
-   boolean assignOperation(Operation op);
+   public enum Status {
+      IDLE, WAITING_FOR_OPERATOR, PROCESSING, BLOCKED
+   }
 
-   WorkCell.Status getStatus();
+   public abstract boolean assignOperation(Operation op);
 
-   long process(long i);
+   public abstract Workstation.Status getStatus();
 
-   boolean evalBlockedStatus();
+   public abstract long process(long i);
 
-   Set<Operator> assignOperators(Collection<? extends Operator> operators);
+   public abstract boolean evalBlockedStatus();
 
-   Set<Operator> unassignOperators();
+   public abstract Set<Operator> assignOperators(Collection<? extends Operator> operators);
 
+   public abstract Set<Operator> unassignOperators();
 }

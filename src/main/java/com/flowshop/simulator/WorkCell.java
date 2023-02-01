@@ -15,17 +15,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @RequiredArgsConstructor
-public class WorkCell implements Workstation {
+public class WorkCell extends Workstation {
 
    @EqualsAndHashCode.Include
    @Getter
    private final String id;
-
-   public enum Status {
-      IDLE, WAITING_FOR_OPERATOR, PROCESSING, BLOCKED
-   };
 
    @ToString.Exclude
    @Getter
@@ -57,28 +53,29 @@ public class WorkCell implements Workstation {
       return assignedOperatorsCount;
    }
 
-   public Status getStatus() {
+   @Override
+   public Workstation.Status getStatus() {
       if (null == currentOperation)
-         return Status.IDLE;
+         return Workstation.Status.IDLE;
       if (calculateAssignedOperators() < calculateOperationRequiredOperators())
-         return Status.WAITING_FOR_OPERATOR;
+         return Workstation.Status.WAITING_FOR_OPERATOR;
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime())
-         return Status.BLOCKED;
-      return Status.PROCESSING;
+         return Workstation.Status.BLOCKED;
+      return Workstation.Status.PROCESSING;
    }
 
    public long evalProcess(long i) {
-      Status status = this.getStatus();
-      if (status != Status.PROCESSING
-            && status != Status.BLOCKED)
+      Workstation.Status status = this.getStatus();
+      if (status != Workstation.Status.PROCESSING
+            && status != Workstation.Status.BLOCKED)
          return 0;
       return Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
    }
 
    public long process(long i) {
-      Status status = this.getStatus();
-      if (status != Status.PROCESSING
-            && status != Status.BLOCKED)
+      Workstation.Status status = this.getStatus();
+      if (status != Workstation.Status.PROCESSING
+            && status != Workstation.Status.BLOCKED)
          return 0;
       long processTime = Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
       currentOperation.setProcessedTime(processTime + currentOperation.getProcessedTime());
@@ -109,7 +106,7 @@ public class WorkCell implements Workstation {
    private boolean wasBlocked() {
       return latestOperation != null && latestOperation.getNextOperation() != null
             && !latestOperation.getNextOperation().getRequiredWorkstation().getStatus()
-                  .equals(WorkCell.Status.IDLE);
+                  .equals(Workstation.Status.IDLE);
    }
 
    public boolean assignOperation(Operation op) {
@@ -123,7 +120,7 @@ public class WorkCell implements Workstation {
 
    public Set<Operator> assignOperators(Collection<? extends Operator> operators) {
       Set<Operator> returnAssigned = new HashSet<>();
-      if (this.getStatus().equals(Status.WAITING_FOR_OPERATOR)
+      if (this.getStatus().equals(Workstation.Status.WAITING_FOR_OPERATOR)
             && operators.size() >= calculateOperationRequiredOperators()) {
          Iterator<? extends Operator> operatorsIt = operators.iterator();
          while (operatorsIt.hasNext() && calculateOperationRequiredOperators() > calculateAssignedOperators()) {
@@ -161,7 +158,7 @@ public class WorkCell implements Workstation {
    }
 
    public Set<Operator> unassignOperators() {
-      if (this.getStatus().equals(Status.PROCESSING))
+      if (this.getStatus().equals(Workstation.Status.PROCESSING))
          return Collections.emptySet();
       HashSet<Operator> returnSet = new HashSet<>(assignedOperators);
       assignedOperators.clear();

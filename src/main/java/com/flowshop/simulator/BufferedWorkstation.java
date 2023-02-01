@@ -6,7 +6,7 @@ import java.util.Set;
 
 import lombok.Getter;
 
-public class BufferedWorkstation implements Workstation, SimObjectObserver {
+public class BufferedWorkstation extends Workstation implements SimObjectObserver {
 
    private final Workstation workstation;
    @Getter
@@ -80,7 +80,8 @@ public class BufferedWorkstation implements Workstation, SimObjectObserver {
          // if I'm able to move all blocked operations to an after buffer the workstation
          // will no longer be blocked
          eval = !tryMoveBlockedOperationsToBuffer();
-         // try to flush before buffer. This will happen if assign operation will permit it 
+      // try to flush before buffer. This will happen if assign operation will permit
+      // it
       while (beforeBuffer.peek() != null) {
          if (workstation.assignOperation(beforeBuffer.peek()))
             beforeBuffer.poll();

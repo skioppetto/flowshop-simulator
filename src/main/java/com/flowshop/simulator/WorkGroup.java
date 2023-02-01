@@ -7,13 +7,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.flowshop.simulator.WorkCell.Status;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class WorkGroup implements Workstation {
+public class WorkGroup extends Workstation {
 
    @Getter
    private final String id;
@@ -23,7 +21,7 @@ public class WorkGroup implements Workstation {
    @Override
    public boolean assignOperation(Operation op) {
       for (WorkCell workCell : workCells) {
-         if (WorkCell.Status.IDLE.equals(workCell.getStatus())) {
+         if (Workstation.Status.IDLE.equals(workCell.getStatus())) {
             workCell.assignOperation(op);
             return true;
          }
@@ -31,17 +29,17 @@ public class WorkGroup implements Workstation {
       return false;
    }
 
-   static Map<WorkCell.Status, Integer> statusWeights = new HashMap<>();
+   static Map<Workstation.Status, Integer> statusWeights = new HashMap<>();
    static {
-      statusWeights.put(Status.IDLE, 1);
-      statusWeights.put(Status.WAITING_FOR_OPERATOR, 2);
-      statusWeights.put(Status.BLOCKED, 3);
-      statusWeights.put(Status.PROCESSING, 4);
+      statusWeights.put(Workstation.Status.IDLE, 1);
+      statusWeights.put(Workstation.Status.WAITING_FOR_OPERATOR, 2);
+      statusWeights.put(Workstation.Status.BLOCKED, 3);
+      statusWeights.put(Workstation.Status.PROCESSING, 4);
    }
 
    @Override
-   public WorkCell.Status getStatus() {
-      Status lower = Status.PROCESSING;
+   public Workstation.Status getStatus() {
+      Workstation.Status lower = Workstation.Status.PROCESSING;
       for (WorkCell workCell : workCells) {
          if (statusWeights.get(workCell.getStatus()) < statusWeights.get(lower))
             lower = workCell.getStatus();
@@ -60,12 +58,12 @@ public class WorkGroup implements Workstation {
 
    private int countWorkstationIdleCells(Workstation w) {
       if (w instanceof WorkCell)
-         return (w.getStatus().equals(WorkCell.Status.IDLE)) ? 1 : 0;
+         return (w.getStatus().equals(Workstation.Status.IDLE)) ? 1 : 0;
       else if (w instanceof WorkGroup) {
          int count = 0;
          Iterator<WorkCell> iterator = ((WorkGroup) w).getWorkCells().iterator();
          while (iterator.hasNext()) {
-            if (iterator.next().getStatus().equals(WorkCell.Status.IDLE))
+            if (iterator.next().getStatus().equals(Workstation.Status.IDLE))
                count++;
          }
          return count;
@@ -86,7 +84,7 @@ public class WorkGroup implements Workstation {
             // will be set to IDLE) and both have the same next
             // operation. In this case we have to consider how many idle workcell will be
             // available on the next workstation
-            if (cell.getStatus().equals(WorkCell.Status.IDLE) && cell.getLatestOperation() != null
+            if (cell.getStatus().equals(Workstation.Status.IDLE) && cell.getLatestOperation() != null
                   && cell.getLatestOperation().getNextOperation() != null) {
                Workstation nextWorkstation = cell.getLatestOperation().getNextOperation().getRequiredWorkstation();
                int nextWorkstationIdleCells = countWorkstationIdleCells(
