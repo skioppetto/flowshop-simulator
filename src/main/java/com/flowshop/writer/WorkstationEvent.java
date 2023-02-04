@@ -8,6 +8,7 @@ import lombok.Data;
 public class WorkstationEvent {
 
    private String workstationId;
+   private String workGroupId;
    private Workstation.Status status;
    private long startTime;
    private long duration;

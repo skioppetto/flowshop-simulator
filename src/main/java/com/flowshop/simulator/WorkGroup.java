@@ -8,15 +8,22 @@ import java.util.Map;
 import java.util.Set;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public class WorkGroup extends Workstation {
+public class WorkGroup extends Workstation implements SimObjectObserver {
 
    @Getter
    private final String id;
    @Getter
    private final Set<WorkCell> workCells;
+
+   public WorkGroup(String id, Set<WorkCell> workCells) {
+      this.id = id;
+      this.workCells = workCells;
+      for (WorkCell wc : workCells) {
+         wc.addSimObjectObserver(this);
+         wc.setWorkGroup(this);
+      }
+   }
 
    @Override
    public boolean assignOperation(Operation op) {
@@ -130,4 +137,14 @@ public class WorkGroup extends Workstation {
       }
       return unassignedSet;
    }
+
+   @Override
+   public void onChange(ObservableSimObject observableSimObject) {
+      notifySimObjectObservers(observableSimObject);
+   }
+
+   @Override
+   public void onAdded(ObservableSimObject observableSimObject) {
+   }
+
 }

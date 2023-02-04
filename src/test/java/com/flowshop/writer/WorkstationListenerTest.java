@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,7 @@ import com.flowshop.simulator.ISimulationTimer;
 import com.flowshop.simulator.Operation;
 import com.flowshop.simulator.Operator;
 import com.flowshop.simulator.WorkCell;
+import com.flowshop.simulator.WorkGroup;
 import com.flowshop.simulator.Workstation;
 
 import static org.easymock.EasyMock.*;
@@ -227,5 +229,49 @@ public class WorkstationListenerTest {
       assertEquals(20l, we4.getDuration());
       assertEquals(60l, we4.getStartTime());
       assertNull(wl.dequeue());
+   }
+
+   @Test
+   void workGroupListener() {
+      WorkCell cell1 = new WorkCell("wg1.cell1");
+      WorkCell cell2 = new WorkCell("wg1.cell2");
+      WorkGroup wg = new WorkGroup("wg1", new HashSet<>(Arrays.asList(cell1, cell2)));
+      ISimulationTimer timer = mock(ISimulationTimer.class);
+      expect(timer.getSimulationTime()).andReturn(10l); // start idle for all cells
+      expect(timer.getSimulationTime()).andReturn(20l); // end idle for cell2
+      expect(timer.getSimulationTime()).andReturn(20l); // end idle for cell1
+      expect(timer.getSimulationTime()).andReturn(30l); // end progress for op1 (+10 of simulation process equals to
+                                                        // cycle time) assigned to cell2
+      replay(timer);
+      WorkstationListener wl = new WorkstationListener(timer);
+      wg.addSimObjectObserver(wl);
+      Operation op1 = new Operation("op1", 10, wg, null);
+      Operation op2 = new Operation("op2", 20, wg, null);
+      wg.assignOperation(op1);
+      wg.assignOperation(op2);
+      SimulatorTestUtils.simulateProcess(10, wg);
+      verify(timer);
+      WorkstationEvent event;
+      event = wl.dequeue();
+      assertNotNull(event);
+      assertEquals("wg1.cell2", event.getWorkstationId());
+      assertEquals(Workstation.Status.IDLE, event.getStatus());
+      assertEquals(10l, event.getDuration());
+      assertEquals(10l, event.getStartTime());
+      assertEquals("wg1", event.getWorkGroupId());
+      event = wl.dequeue();
+      assertNotNull(event);
+      assertEquals("wg1.cell1", event.getWorkstationId());
+      assertEquals(Workstation.Status.IDLE, event.getStatus());
+      assertEquals(10l, event.getDuration());
+      assertEquals(10l, event.getStartTime());
+      assertEquals("wg1", event.getWorkGroupId());
+      event = wl.dequeue();
+      assertNotNull(event);
+      assertEquals("wg1.cell2", event.getWorkstationId());
+      assertEquals(Workstation.Status.PROCESSING, event.getStatus());
+      assertEquals(10l, event.getDuration());
+      assertEquals(20l, event.getStartTime());
+      assertEquals("wg1", event.getWorkGroupId());
    }
 }

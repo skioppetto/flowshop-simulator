@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
@@ -36,6 +37,11 @@ public class WorkCell extends Workstation {
    @ToString.Exclude
    @Getter(value = AccessLevel.PACKAGE)
    private Operation latestOperation;
+
+   @ToString.Exclude
+   @Getter
+   @Setter
+   private WorkGroup workGroup;
 
    private int calculateOperationRequiredOperators() {
       if (currentOperation == null)
@@ -82,7 +88,7 @@ public class WorkCell extends Workstation {
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime()) {
          this.latestOperation = currentOperation;
          this.currentOperation = null;
-         
+
       }
       notifySimObjectObservers();
       return processTime;
@@ -93,7 +99,7 @@ public class WorkCell extends Workstation {
       boolean isBlocked = wasBlocked();
       if (latestOperation != null)
          latestOperation.setBlocked(isBlocked);
-      if (isBlocked){
+      if (isBlocked) {
          currentOperation = latestOperation;
       }
       notifySimObjectObservers();
