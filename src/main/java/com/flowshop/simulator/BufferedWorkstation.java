@@ -8,6 +8,7 @@ import lombok.Getter;
 
 public class BufferedWorkstation extends Workstation implements SimObjectObserver {
 
+   @Getter
    private final Workstation workstation;
    @Getter
    private final int afterBufferMaxSize;
@@ -22,6 +23,7 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
       this.workstation = cell;
       this.afterBufferMaxSize = afterSize;
       this.beforeBufferMaxSize = beforeSize;
+      cell.addSimObjectObserver(this);
    }
 
    // return true if the workcell is not blocked and it's not needed any
@@ -85,6 +87,8 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
       while (beforeBuffer.peek() != null) {
          if (workstation.assignOperation(beforeBuffer.peek()))
             beforeBuffer.poll();
+         else
+            break;
       }
       return eval;
    }
@@ -105,7 +109,10 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
             afterBuffer.removeIf(op -> nextOperation.equals(op.getNextOperation()));
             nextOperation.removeSimObjectObserver(this);
          }
+      } else if (observableSimObject instanceof Workstation) {
+         notifySimObjectObservers(observableSimObject);
       }
+
    }
 
    @Override
@@ -115,9 +122,7 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
 
    @Override
    public void onAdded(ObservableSimObject observableSimObject) {
-      
-   }
 
-   
+   }
 
 }
