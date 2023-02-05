@@ -26,10 +26,10 @@ public class BufferedWorkgroupTest {
       Operation ord3op1 = new Operation("ord3.op1", 10, grp1, null);
       Operation ord4op1 = new Operation("ord4.op1", 10, grp1, null);
 
-      ord1 = new Order(Arrays.asList(ord1op1, ord1op2));
-      ord2 = new Order(Arrays.asList(ord2op1, ord2op2));
-      ord3 = new Order(Arrays.asList(ord3op1));
-      ord4 = new Order(Arrays.asList(ord4op1));
+      ord1 = new Order("order1", Arrays.asList(ord1op1, ord1op2));
+      ord2 = new Order("order2",Arrays.asList(ord2op1, ord2op2));
+      ord3 = new Order("order3",Arrays.asList(ord3op1));
+      ord4 = new Order("order4",Arrays.asList(ord4op1));
 
       sim = new Simulation(Arrays.asList(ord1, ord2, ord3, ord4));
    }

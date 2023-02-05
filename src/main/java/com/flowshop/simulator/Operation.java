@@ -30,6 +30,9 @@ public class Operation extends ObservableSimObject {
    private final Operation nextOperation;
    @Getter
    private boolean blocked;
+   @Getter
+   @Setter
+   private Order order;
 
    public Operation(String id, long cycleTime, Workstation requiredWorkstation, Operation nextOperation,
          int requiredOperators) {

@@ -31,6 +31,11 @@ public class WorkstationListener implements SimObjectObserver {
       running.setWorkstationId(workstation.getId());
       if (workstation.getWorkGroup() != null)
          running.setWorkGroupId(workstation.getWorkGroup().getId());
+      if (workstation.getCurrentOperation() != null) {
+         running.setOperationId(workstation.getCurrentOperation().getId());
+         if (workstation.getCurrentOperation().getOrder() != null)
+            running.setOrderId(workstation.getCurrentOperation().getOrder().getId());
+      }
       runningEvents.put(workstation, running);
    }
 

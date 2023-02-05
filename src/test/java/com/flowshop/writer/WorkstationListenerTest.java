@@ -182,6 +182,7 @@ public class WorkstationListenerTest {
       assertEquals(Workstation.Status.PROCESSING, we3.getStatus());
       assertEquals(10l, we3.getDuration());
       assertEquals(50l, we3.getStartTime());
+      assertEquals("ope1", we3.getOperationId());
       assertNull(wl.dequeue());
    }
 

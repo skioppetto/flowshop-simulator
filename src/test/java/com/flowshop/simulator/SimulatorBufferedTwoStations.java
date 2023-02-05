@@ -12,7 +12,7 @@ public class SimulatorBufferedTwoStations {
    private Order buildOrder(String orderName, Workstation wst1, Workstation wst2) {
       Operation op2 = new Operation(orderName + ".slow.op2", 30, wst2, null);
       Operation op1 = new Operation(orderName + ".fast.op1", 10, wst1, op2);
-      return new Order(Arrays.asList(op1, op2));
+      return new Order("order", Arrays.asList(op1, op2));
 
    }
 
