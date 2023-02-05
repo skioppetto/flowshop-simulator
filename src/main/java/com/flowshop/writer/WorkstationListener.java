@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
+import com.flowshop.simulator.BufferedWorkstation;
 import com.flowshop.simulator.ISimulationTimer;
 import com.flowshop.simulator.ObservableSimObject;
 import com.flowshop.simulator.SimObjectObserver;
@@ -35,14 +36,21 @@ public class WorkstationListener implements SimObjectObserver {
 
    @Override
    public void onAdded(ObservableSimObject observableSimObject) {
-      if (observableSimObject instanceof WorkCell) {
-         initWorkCell((WorkCell) observableSimObject, timer.getSimulationTime());
+      Workstation workstation = null;
+      if (observableSimObject instanceof BufferedWorkstation)
+         workstation = ((BufferedWorkstation) observableSimObject).getWorkstation();
+      else if (observableSimObject instanceof Workstation)
+         workstation = (Workstation) observableSimObject;
+      if (null != workstation) {
+         if (workstation instanceof WorkCell) {
+            initWorkCell((WorkCell) workstation, timer.getSimulationTime());
 
-      } else if (observableSimObject instanceof WorkGroup) {
-         WorkGroup group = (WorkGroup) observableSimObject;
-         long simulationTime = timer.getSimulationTime();
-         for (WorkCell workstation : group.getWorkCells()) {
-            initWorkCell(workstation, simulationTime);
+         } else if (workstation instanceof WorkGroup) {
+            WorkGroup group = (WorkGroup) workstation;
+            long simulationTime = timer.getSimulationTime();
+            for (WorkCell cell : group.getWorkCells()) {
+               initWorkCell(cell, simulationTime);
+            }
          }
       }
    }

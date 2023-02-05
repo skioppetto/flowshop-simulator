@@ -1,5 +1,9 @@
 package com.flowshop.writer;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -10,14 +14,13 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 
 import com.flowshop.SimulatorTestUtils;
+import com.flowshop.simulator.BufferedWorkstation;
 import com.flowshop.simulator.ISimulationTimer;
 import com.flowshop.simulator.Operation;
 import com.flowshop.simulator.Operator;
 import com.flowshop.simulator.WorkCell;
 import com.flowshop.simulator.WorkGroup;
 import com.flowshop.simulator.Workstation;
-
-import static org.easymock.EasyMock.*;
 
 public class WorkstationListenerTest {
 
@@ -273,5 +276,36 @@ public class WorkstationListenerTest {
       assertEquals(10l, event.getDuration());
       assertEquals(20l, event.getStartTime());
       assertEquals("wg1", event.getWorkGroupId());
+   }
+
+   @Test
+   void bufferedWorkCellListener() {
+      Workstation cell = new WorkCell("cell1");
+      BufferedWorkstation bw = new BufferedWorkstation(cell, 2, 2);
+      ISimulationTimer timer = mock(ISimulationTimer.class);
+      expect(timer.getSimulationTime()).andReturn(10l); 
+      expect(timer.getSimulationTime()).andReturn(20l); 
+      expect(timer.getSimulationTime()).andReturn(20l); 
+      expect(timer.getSimulationTime()).andReturn(20l); 
+      replay(timer);
+      WorkstationListener wl = new WorkstationListener(timer);
+      bw.addSimObjectObserver(wl);
+      Operation op1 = new Operation("op1", 10, bw, null);
+      Operation op2 = new Operation("op2", 20, bw, null);
+      Operation op3 = new Operation("op3", 20, bw, null);
+      bw.assignOperation(op1);
+      bw.assignOperation(op2);
+      bw.assignOperation(op3);
+      SimulatorTestUtils.simulateProcess(10, bw);
+      verify(timer);
+      WorkstationEvent event;
+      event = wl.dequeue();
+      assertNotNull(event);
+      assertEquals("cell1", event.getWorkstationId());
+      assertEquals(Workstation.Status.IDLE, event.getStatus());
+      assertEquals(10l, event.getDuration());
+      assertEquals(10l, event.getStartTime());
+      assertNull(event.getWorkGroupId());
+
    }
 }
