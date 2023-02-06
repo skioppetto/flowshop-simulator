@@ -20,8 +20,8 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
 
    public BufferedWorkstation(Workstation cell, int afterSize, int beforeSize) {
       this.workstation = cell;
-      this.beforeBuffer = new WorkstationBuffer(WorkstationBuffer.Type.BEFORE, beforeSize);
-      this.afterBuffer = new WorkstationBuffer(WorkstationBuffer.Type.AFTER, afterSize);
+      this.beforeBuffer = new WorkstationBuffer(this, WorkstationBuffer.Type.BEFORE, beforeSize);
+      this.afterBuffer = new WorkstationBuffer(this, WorkstationBuffer.Type.AFTER, afterSize);
       this.afterBufferMaxSize = afterSize;
       this.beforeBufferMaxSize = beforeSize;
       cell.addSimObjectObserver(this);

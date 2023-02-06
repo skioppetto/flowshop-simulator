@@ -12,23 +12,26 @@ public class WorkstationBuffer extends ObservableSimObject {
    };
 
    @Getter
+   private final BufferedWorkstation workstation;
+   @Getter
    private final Queue<Operation> queue;
    @Getter
    private final Type type;
    @Getter
-   private final int size;
+   private final int maxSize;
 
-   public WorkstationBuffer(Type type, int size) {
+   public WorkstationBuffer(BufferedWorkstation workstation, Type type, int size) {
       if (size > 0)
          this.queue = new ArrayBlockingQueue<>(size);
       else
          this.queue = null;
       this.type = type;
-      this.size = size;
+      this.maxSize = size;
+      this.workstation = workstation;
    }
 
    public boolean enqueue(Operation op) {
-      if (size == 0)
+      if (maxSize == 0)
          return false;
       boolean enqueued = queue.offer(op);
       if (enqueued)
@@ -37,7 +40,7 @@ public class WorkstationBuffer extends ObservableSimObject {
    }
 
    public Operation dequeue() {
-      if (size == 0)
+      if (maxSize == 0)
          return null;
       Operation op = queue.poll();
       if (op != null)
@@ -46,25 +49,25 @@ public class WorkstationBuffer extends ObservableSimObject {
    }
 
    public Operation peek() {
-      if (size == 0)
+      if (maxSize == 0)
          return null;
       return queue.peek();
    }
 
    public int size() {
-      if (size > 0)
+      if (maxSize > 0)
          return queue.size();
       return 0;
    }
 
    public boolean contains(Operation op2) {
-      if (size == 0)
+      if (maxSize == 0)
          return false;
       return queue.contains(op2);
    }
 
    public boolean isEmpty() {
-      if (size == 0)
+      if (maxSize == 0)
          return true;
       return queue.isEmpty();
    }
