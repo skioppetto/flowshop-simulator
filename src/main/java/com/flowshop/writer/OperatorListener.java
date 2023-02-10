@@ -1,7 +1,6 @@
 package com.flowshop.writer;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
@@ -15,11 +14,12 @@ import com.flowshop.simulator.WorkCell;
 public class OperatorListener implements SimObjectObserver {
 
    private final ISimulationTimer timer;
-   private final Queue<OperatorEvent> queue = new LinkedList<>();
+   private final Queue<Object> queue;
    private final Map<Operator, OperatorEvent> runningEvents = new HashMap<>();
 
-   public OperatorListener(ISimulationTimer timer) {
+   public OperatorListener(ISimulationTimer timer, Queue<Object> queue) {
       this.timer = timer;
+      this.queue = queue;
    }
 
    @Override
@@ -40,7 +40,8 @@ public class OperatorListener implements SimObjectObserver {
             if (workstation.getCurrentOperation() != null) {
                Operation operation = workstation.getCurrentOperation();
                nextEvent.setOperationId(operation.getId());
-               // nextEvent.setOrderId(operation.getOrder());
+               if (operation.getOrder() != null)
+                  nextEvent.setOrderId(operation.getOrder().getId());
             }
          }
       }
@@ -54,9 +55,4 @@ public class OperatorListener implements SimObjectObserver {
       running.setStartTime(timer.getSimulationTime());
       runningEvents.put(operator, running);
    }
-
-   public OperatorEvent dequeue() {
-      return queue.poll();
-   }
-
 }

@@ -1,7 +1,6 @@
 package com.flowshop.writer;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
@@ -16,10 +15,11 @@ public class WorkstationBufferListener implements SimObjectObserver {
 
    private final Map<String, WorkstationBufferEvent> runningEvents = new HashMap<>();
 
-   private final Queue<WorkstationBufferEvent> queue = new LinkedList<>();
+   private final Queue<Object> queue;
 
-   public WorkstationBufferListener(ISimulationTimer timer) {
+   public WorkstationBufferListener(ISimulationTimer timer, Queue<Object> queue) {
       this.timer = timer;
+      this.queue = queue;
    }
 
    @Override
@@ -57,10 +57,6 @@ public class WorkstationBufferListener implements SimObjectObserver {
 
    private String buildMapKey(WorkstationBuffer buffer) {
       return buffer.getWorkstation().getId() + buffer.getType().toString();
-   }
-
-   public WorkstationBufferEvent dequeue() {
-      return queue.poll();
    }
 
 }

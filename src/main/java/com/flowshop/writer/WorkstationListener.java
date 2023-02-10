@@ -1,7 +1,6 @@
 package com.flowshop.writer;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
@@ -17,11 +16,12 @@ public class WorkstationListener implements SimObjectObserver {
 
    private ISimulationTimer timer;
 
-   private final Queue<WorkstationEvent> queue = new LinkedList<>();
+   private final Queue<Object> queue;
    private final Map<Workstation, WorkstationEvent> runningEvents = new HashMap<>();
 
-   public WorkstationListener(ISimulationTimer timer) {
+   public WorkstationListener(ISimulationTimer timer, Queue<Object> queue) {
       this.timer = timer;
+      this.queue = queue;
    }
 
    private void initWorkCell(WorkCell workstation, long simulationTime) {
@@ -76,9 +76,4 @@ public class WorkstationListener implements SimObjectObserver {
          }
       }
    }
-
-   public WorkstationEvent dequeue() {
-      return queue.poll();
-   }
-
 }

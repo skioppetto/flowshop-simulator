@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.flowshop.writer.AbstractEventsWriter;
+
 import lombok.Getter;
 
-public class Simulation {
+public class Simulation implements ISimulationTimer {
 
    @Getter
    private final List<Order> orders;
@@ -15,7 +17,13 @@ public class Simulation {
    private final Set<Workstation> workstations = new HashSet<>();
    @Getter
    private final Set<Operator> availableOperators = new HashSet<>();
-   
+
+   private final Set<AbstractEventsWriter> eventsWriters = new HashSet<>();
+
+   private final Set<Thread> writingThreads = new HashSet<>();
+
+   private long simulationTime = 0;
+
    public Simulation(List<Order> orders, Collection<? extends Operator> operators) {
       this(orders);
       this.availableOperators.addAll(operators);
@@ -30,7 +38,12 @@ public class Simulation {
       }
    }
 
+   public void addEventsWriter(AbstractEventsWriter eventsWriter) {
+      this.eventsWriters.add(eventsWriter);
+   }
+
    public void start() {
+      startWritingThreads();
       for (Order order : orders) {
          Operation firstOperation = order.getOperations().get(0);
          Workstation workstation = firstOperation.getRequiredWorkstation();
@@ -40,7 +53,34 @@ public class Simulation {
       }
    }
 
+   public void stop(){
+      stopWritingThreads();   
+   }
+
+   private void startWritingThreads() {
+      for (AbstractEventsWriter eWriter : eventsWriters) {
+         Thread writerThread = new Thread(eWriter);
+         writerThread.start();
+         writingThreads.add(writerThread);
+      }
+   }
+
+   private void stopWritingThreads() {
+      for (AbstractEventsWriter eWriter : eventsWriters) {
+         eWriter.setStopped(true);
+      }
+      for (Thread writingThread : writingThreads) {
+         try {
+            writingThread.join(10);
+            writingThread.interrupt();
+         } catch (InterruptedException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+
    public void process(int i) {
+      simulationTime += i;
       // all operators that are not working are released from the workstation
       workstations.stream().parallel()
             .forEach(this::unassignOperators);
@@ -70,6 +110,11 @@ public class Simulation {
    // this method will work with single workstations
    private void unassignOperators(Workstation workstation) {
       this.availableOperators.addAll(workstation.unassignOperators());
+   }
+
+   @Override
+   public long getSimulationTime() {
+      return simulationTime;
    }
 
 }

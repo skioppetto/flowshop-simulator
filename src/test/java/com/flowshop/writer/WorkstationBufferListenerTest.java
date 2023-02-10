@@ -1,9 +1,15 @@
 package com.flowshop.writer;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +23,8 @@ import com.flowshop.simulator.WorkstationBuffer;
 
 public class WorkstationBufferListenerTest {
 
+   Queue<Object> queue = new LinkedList<>();
+
    @Test
    void enqueueOnBeforeBuffer() {
       ISimulationTimer timer = mock(ISimulationTimer.class);
@@ -24,7 +32,7 @@ public class WorkstationBufferListenerTest {
       replay(timer);
       Workstation cell = new WorkCell("cell1");
       BufferedWorkstation bw = new BufferedWorkstation(cell, 2, 2);
-      WorkstationBufferListener observer = new WorkstationBufferListener(timer);
+      WorkstationBufferListener observer = new WorkstationBufferListener(timer, queue);
       bw.getAfterBuffer().addSimObjectObserver(observer);
       bw.getBeforeBuffer().addSimObjectObserver(observer);
       Operation op2 = new Operation("ope2", 10, bw, null);
@@ -32,14 +40,14 @@ public class WorkstationBufferListenerTest {
       bw.assignOperation(op1);
       bw.assignOperation(op2);
       verify(timer);
-      WorkstationBufferEvent event = observer.dequeue();
+      WorkstationBufferEvent event = (WorkstationBufferEvent) queue.poll();
       assertNotNull(event);
       assertEquals("cell1", event.getWorkstationId());
       assertEquals(WorkstationBuffer.Type.BEFORE, event.getBufferType());
       assertEquals(WorkstationBufferEvent.EventType.ENQUEUE, event.getEventType());
       assertEquals(1, event.getSize());
       assertEquals(0, event.getTime());
-      assertNull(observer.dequeue());
+      assertNull((WorkstationBufferEvent) queue.poll());
    }
 
    @Test
@@ -50,7 +58,7 @@ public class WorkstationBufferListenerTest {
       replay(timer);
       Workstation cell = new WorkCell("cell1");
       BufferedWorkstation bw = new BufferedWorkstation(cell, 2, 2);
-      WorkstationBufferListener observer = new WorkstationBufferListener(timer);
+      WorkstationBufferListener observer = new WorkstationBufferListener(timer, queue);
       bw.getAfterBuffer().addSimObjectObserver(observer);
       bw.getBeforeBuffer().addSimObjectObserver(observer);
       Operation op2 = new Operation("ope2", 20, bw, null);
@@ -60,20 +68,20 @@ public class WorkstationBufferListenerTest {
       SimulatorTestUtils.simulateProcess(10, bw);
       verify(timer);
       WorkstationBufferEvent event;
-      event = observer.dequeue();
+      event = (WorkstationBufferEvent) queue.poll();
       assertNotNull(event);
       assertEquals("cell1", event.getWorkstationId());
       assertEquals(WorkstationBuffer.Type.BEFORE, event.getBufferType());
       assertEquals(WorkstationBufferEvent.EventType.ENQUEUE, event.getEventType());
       assertEquals(1, event.getSize());
       assertEquals(0, event.getTime());
-      event = observer.dequeue();
+      event = (WorkstationBufferEvent) queue.poll();
       assertNotNull(event);
       assertEquals("cell1", event.getWorkstationId());
       assertEquals(WorkstationBuffer.Type.BEFORE, event.getBufferType());
       assertEquals(WorkstationBufferEvent.EventType.DEQUEUE, event.getEventType());
       assertEquals(0, event.getSize());
       assertEquals(10, event.getTime());
-      assertNull(observer.dequeue());
+      assertNull((WorkstationBufferEvent) queue.poll());
    }
 }
