@@ -12,7 +12,7 @@ public class SimulatorBufferedTwoStations {
    private Order buildOrder(String orderName, Workstation wst1, Workstation wst2) {
       Operation op2 = new Operation(orderName + ".slow.op2", 30, wst2, null);
       Operation op1 = new Operation(orderName + ".fast.op1", 10, wst1, op2);
-      return new Order(Arrays.asList(op1, op2));
+      return new Order("order", Arrays.asList(op1, op2));
 
    }
 
@@ -30,8 +30,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.TODO, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.TODO, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.PROCESSING, bCell1.getStatus());
-      assertEquals(WorkCell.Status.IDLE, cell2.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, bCell1.getStatus());
+      assertEquals(Workstation.Status.IDLE, cell2.getStatus());
       // operation status
       assertEquals(Operation.Status.PROGRESS, sim.getOrders().get(0).getOperations().get(0).getStatus());
       assertEquals(Operation.Status.TODO, sim.getOrders().get(1).getOperations().get(0).getStatus());
@@ -53,8 +53,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.TODO, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.PROCESSING, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       assertEquals(Operation.Status.DONE, sim.getOrders().get(0).getOperations().get(0).getStatus());
       assertEquals(Operation.Status.PROGRESS, sim.getOrders().get(1).getOperations().get(0).getStatus());
@@ -80,8 +80,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.PROCESSING, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       assertEquals(Operation.Status.DONE, sim.getOrders().get(0).getOperations().get(0).getStatus());
       assertEquals(Operation.Status.DONE, sim.getOrders().get(1).getOperations().get(0).getStatus());
@@ -113,8 +113,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.IDLE, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.IDLE, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       assertEquals(Operation.Status.DONE, sim.getOrders().get(0).getOperations().get(0).getStatus());
       assertEquals(Operation.Status.DONE, sim.getOrders().get(1).getOperations().get(0).getStatus());
@@ -147,8 +147,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.IDLE, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.IDLE, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       // TODO: make Operation Status PROGRESS even if processed time is equal to 0
       // when the operation is assigned to a workstation. In this way I'll get a
@@ -185,8 +185,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.IDLE, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.IDLE, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       // TODO: make Operation Status PROGRESS even if processed time is equal to 0
       // when the operation is assigned to a workstation. In this way I'll get a
@@ -224,8 +224,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.IDLE, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.IDLE, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       // TODO: make Operation Status PROGRESS even if processed time is equal to 0
       // when the operation is assigned to a workstation. In this way I'll get a
@@ -264,8 +264,8 @@ public class SimulatorBufferedTwoStations {
       assertEquals(Order.Status.DONE, sim.getOrders().get(1).getStatus());
       assertEquals(Order.Status.PROGRESS, sim.getOrders().get(2).getStatus());
       // workstation status
-      assertEquals(WorkCell.Status.IDLE, bCell1.getStatus());
-      assertEquals(WorkCell.Status.PROCESSING, cell2.getStatus());
+      assertEquals(Workstation.Status.IDLE, bCell1.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, cell2.getStatus());
       // operation status
       // TODO: make Operation Status PROGRESS even if processed time is equal to 0
       // when the operation is assigned to a workstation. In this way I'll get a

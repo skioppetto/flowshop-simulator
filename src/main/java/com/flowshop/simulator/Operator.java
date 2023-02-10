@@ -5,9 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @RequiredArgsConstructor
-public class Operator {
+public class Operator extends ObservableSimObject {
 
    public enum Status {
       IDLE, PROCESSING
@@ -23,6 +23,11 @@ public class Operator {
    public Operator(String id) {
       this.id = id;
       this.group = null;
+   }
+
+   public void setAssignedWorkstation(WorkCell cell) {
+      this.assignedWorkstation = cell;
+      notifySimObjectObservers();
    }
 
    public Status getStatus() {

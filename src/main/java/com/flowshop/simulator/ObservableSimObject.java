@@ -14,17 +14,21 @@ public abstract class ObservableSimObject {
 
    public void addSimObjectObserver(SimObjectObserver observer) {
       this.observers.add(observer);
+      observer.onAdded(this);
    }
 
-   protected void notifySimObjectObservers() {
+   protected void notifySimObjectObservers(ObservableSimObject object) {
       runningNotification = true;
       Iterator<SimObjectObserver> observerIt = observers.iterator();
       while (observerIt.hasNext())
-         observerIt.next().onChange(this);
+         observerIt.next().onChange(object);
       runningNotification = false;
       observers.removeAll(toBeRemoved);
       toBeRemoved.clear();
+   }
 
+   protected void notifySimObjectObservers() {
+      notifySimObjectObservers(this);
    }
 
    public void removeSimObjectObserver(SimObjectObserver observer) {

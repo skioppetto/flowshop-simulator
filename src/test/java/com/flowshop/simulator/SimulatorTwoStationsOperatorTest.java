@@ -1,6 +1,6 @@
 package com.flowshop.simulator;
 
-import static com.flowshop.simulator.SimulatorTestUtils.buildOrder;
+import static com.flowshop.SimulatorTestUtils.buildOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class SimulatorTwoStationsOperatorTest {
 
       // I expect that the first operator will be moved to the first workstation where
       // the first operation of the first order will be processed
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
       assertEquals(ord1.getOperations().get(0), workstations[0].getCurrentOperation());
       
    }
@@ -45,10 +45,10 @@ public class SimulatorTwoStationsOperatorTest {
       // second operation of the first order or
       // assigned to the first workstation to process the first operation of the
       // second order? who knows?
-      assertEquals(WorkCell.Status.PROCESSING, workstations[0].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[0].getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
       
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, workstations[1].getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, workstations[1].getStatus());
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
    }
 
@@ -65,10 +65,10 @@ public class SimulatorTwoStationsOperatorTest {
       sim.process(1);
       sim.process(1);
 
-      assertEquals(WorkCell.Status.BLOCKED, workstations[0].getStatus());
+      assertEquals(Workstation.Status.BLOCKED, workstations[0].getStatus());
       assertEquals(ord2.getOperations().get(0), workstations[0].getCurrentOperation());
       
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, workstations[1].getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, workstations[1].getStatus());
       assertEquals(ord1.getOperations().get(1), workstations[1].getCurrentOperation());
 
    }
@@ -92,10 +92,10 @@ public class SimulatorTwoStationsOperatorTest {
       // beginning of this unit and process it
       assertEquals(1l, ord1.getOperations().get(1).getProcessedTime());
       // now the current operation is the one that was blocked
-      assertEquals(WorkCell.Status.PROCESSING, workstations[1].getStatus());
+      assertEquals(Workstation.Status.PROCESSING, workstations[1].getStatus());
       assertEquals(ord2.getOperations().get(1), workstations[1].getCurrentOperation());
       
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
    }
 
    @Test
@@ -113,8 +113,8 @@ public class SimulatorTwoStationsOperatorTest {
       sim.process(1);
       sim.process(1);
 
-      assertEquals(WorkCell.Status.IDLE, workstations[1].getStatus());
-      assertEquals(WorkCell.Status.IDLE, workstations[0].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[1].getStatus());
+      assertEquals(Workstation.Status.IDLE, workstations[0].getStatus());
 
    }
 

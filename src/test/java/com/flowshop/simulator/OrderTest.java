@@ -13,15 +13,17 @@ public class OrderTest {
    void statusTodo() {
       Operation op2 = new Operation("op2", 10, null, null);
       Operation op1 = new Operation("op1", 20, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       assertEquals(Order.Status.TODO, order.getStatus());
+      assertEquals(op1.getOrder(), order);
+      assertEquals(op2.getOrder(), order);
    }
 
    @Test
    void statusProgress() {
       Operation op2 = new Operation("op2", 10, null, null);
       Operation op1 = new Operation("op1", 20, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       op1.setProcessedTime(5);
       assertEquals(Order.Status.PROGRESS, order.getStatus());
    }
@@ -30,7 +32,7 @@ public class OrderTest {
    void statusProgress2() {
       Operation op2 = new Operation("op2", 20, null, null);
       Operation op1 = new Operation("op1", 10, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       op1.setProcessedTime(10);
       op2.setProcessedTime(10);
       assertEquals(Order.Status.PROGRESS, order.getStatus());
@@ -40,7 +42,7 @@ public class OrderTest {
    void statusDone() {
       Operation op2 = new Operation("op2", 10, null, null);
       Operation op1 = new Operation("op1", 20, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       op1.setProcessedTime(10);
       op2.setProcessedTime(20);
       assertEquals(Order.Status.DONE, order.getStatus());
@@ -50,7 +52,7 @@ public class OrderTest {
    void nextOperationFirst() {
       Operation op2 = new Operation("op2", 10, null, null);
       Operation op1 = new Operation("op1", 20, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       assertEquals(op1, order.getNextOperation());
    }
 
@@ -58,7 +60,7 @@ public class OrderTest {
    void nextOperationProgress() {
       Operation op2 = new Operation("op2", 10, null, null);
       Operation op1 = new Operation("op1", 20, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       op1.setProcessedTime(5);
       assertNull(order.getNextOperation());
    }
@@ -67,7 +69,7 @@ public class OrderTest {
    void nextOperation() {
       Operation op2 = new Operation("op2", 20, null, null);
       Operation op1 = new Operation("op1", 10, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       op1.setProcessedTime(10);
       assertEquals(op2, order.getNextOperation());
    }
@@ -76,7 +78,7 @@ public class OrderTest {
    void nextOperationDone() {
       Operation op2 = new Operation("op2", 10, null, null);
       Operation op1 = new Operation("op1", 20, null, op2);
-      Order order = new Order(Arrays.asList(op1, op2));
+      Order order = new Order("order", Arrays.asList(op1, op2));
       op1.setProcessedTime(10);
       op2.setProcessedTime(20);
       assertNull(order.getNextOperation());

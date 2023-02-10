@@ -11,8 +11,16 @@ public class Order {
       TODO, PROGRESS, DONE
    }
 
+   private final String id;
    private final List<Operation> operations;
    private int nextOperationIdx = 0;
+
+   public Order(String id, List<Operation> operations) {
+      this.id = id;
+      this.operations = operations;
+      for (Operation op : operations)
+         op.setOrder(this);
+   }
 
    public Operation getNextOperation() {
       Status orderStatus = getStatus();

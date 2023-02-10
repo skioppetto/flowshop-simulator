@@ -1,6 +1,6 @@
 package com.flowshop.simulator;
 
-import static com.flowshop.simulator.SimulatorTestUtils.simulateProcess;
+import static com.flowshop.SimulatorTestUtils.simulateProcess;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,7 +18,7 @@ public class WorkGroupTest {
       WorkCell wst1 = new WorkCell("group.wst1");
       WorkCell wst2 = new WorkCell("group.wst2");
       WorkGroup group = new WorkGroup("group", new HashSet<>(Arrays.asList(wst1, wst2)));
-      assertEquals(WorkCell.Status.IDLE, group.getStatus());
+      assertEquals(Workstation.Status.IDLE, group.getStatus());
    }
 
    @Test
@@ -28,7 +28,7 @@ public class WorkGroupTest {
       WorkGroup group = new WorkGroup("group", new HashSet<>(Arrays.asList(wst1, wst2)));
       Operation op = new Operation("operation", 10, group, null, 2);
       group.assignOperation(op);
-      assertEquals(WorkCell.Status.IDLE, group.getStatus());
+      assertEquals(Workstation.Status.IDLE, group.getStatus());
    }
 
    @Test
@@ -40,7 +40,7 @@ public class WorkGroupTest {
       Operation op2 = new Operation("operation2", 10, group, null, 1);
       group.assignOperation(op1);
       group.assignOperation(op2);
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, group.getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, group.getStatus());
    }
 
    @Test
@@ -54,7 +54,7 @@ public class WorkGroupTest {
       group.assignOperation(op1);
       group.assignOperation(op2);
       group.assignOperators(Arrays.asList(operator1));
-      assertEquals(WorkCell.Status.WAITING_FOR_OPERATOR, group.getStatus());
+      assertEquals(Workstation.Status.WAITING_FOR_OPERATOR, group.getStatus());
    }
 
    @Test
@@ -70,7 +70,7 @@ public class WorkGroupTest {
       group.assignOperation(op2);
       group.assignOperators(Arrays.asList(operator1));
       group.assignOperators(Arrays.asList(operator2));
-      assertEquals(WorkCell.Status.PROCESSING, group.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, group.getStatus());
    }
 
    @Test
@@ -82,7 +82,7 @@ public class WorkGroupTest {
       Operation op2 = new Operation("operation2", 10, group, null);
       group.assignOperation(op1);
       group.assignOperation(op2);
-      assertEquals(WorkCell.Status.PROCESSING, group.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, group.getStatus());
    }
 
    @Test
@@ -98,7 +98,7 @@ public class WorkGroupTest {
       group.assignOperation(op2);
       stn.assignOperation(op3);
       simulateProcess(10, group, stn);
-      assertEquals(WorkCell.Status.BLOCKED, group.getStatus());
+      assertEquals(Workstation.Status.BLOCKED, group.getStatus());
    }
 
    @Test
@@ -115,7 +115,7 @@ public class WorkGroupTest {
       stn.assignOperation(op3);
 
       simulateProcess(10, group, stn);
-      assertEquals(WorkCell.Status.BLOCKED, group.getStatus());
+      assertEquals(Workstation.Status.BLOCKED, group.getStatus());
    }
 
    @Test
@@ -229,7 +229,7 @@ public class WorkGroupTest {
       group.assignOperation(op1);
       group.assignOperation(op2);
       assertEquals(5, group.process(5));
-      assertEquals(WorkCell.Status.PROCESSING, group.getStatus());
+      assertEquals(Workstation.Status.PROCESSING, group.getStatus());
    }
 
    @Test
@@ -240,7 +240,7 @@ public class WorkGroupTest {
       Operation op1 = new Operation("operation1", 10, group, null);
       group.assignOperation(op1);
       assertEquals(0, group.process(5));
-      assertEquals(WorkCell.Status.IDLE, group.getStatus());
+      assertEquals(Workstation.Status.IDLE, group.getStatus());
    }
 
    @Test
@@ -253,7 +253,7 @@ public class WorkGroupTest {
       group.assignOperation(op1);
       group.assignOperation(op2);
       assertEquals(10, group.process(10));
-      assertEquals(WorkCell.Status.IDLE, group.getStatus());
+      assertEquals(Workstation.Status.IDLE, group.getStatus());
    }
 
    @Test
@@ -266,7 +266,7 @@ public class WorkGroupTest {
       group.assignOperation(op1);
       group.assignOperation(op2);
       assertEquals(10, group.process(20));
-      assertEquals(WorkCell.Status.IDLE, group.getStatus());
+      assertEquals(Workstation.Status.IDLE, group.getStatus());
    }
 
    @Test
