@@ -1,0 +1,14 @@
+[
+    {
+        "name": "workstation1"
+    },
+    {
+        "name": "workgroup2",
+        "cells": 3
+    },
+    {
+        "name": "buffered_workstation",
+        "afterBuffer": 4,
+        "beforeBuffer": 10
+    }
+]

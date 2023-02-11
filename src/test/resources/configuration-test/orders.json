@@ -1,0 +1,34 @@
+[
+   {
+      "orderId": "ITEM-10",
+      "operations": [
+         {
+            "operationId": "ITEM-10.OP01",
+            "cycleTime": 20,
+            "requiredWorkstation": "WRK1",
+            "requiredOperatorsAny": 2,
+            "requiredOperatorsGroups": [
+               {
+                  "groupId": "USERS",
+                  "required": 2
+               },
+               {
+                  "groupId": "ELC",
+                  "required": 1
+               }
+            ]
+         },
+         {
+            "operationId": "ITEM-10.OP02",
+            "cycleTime": 40,
+            "requiredWorkstation": "WRK2",
+            "requiredOperatorsAny": 2
+         },
+         {
+            "operationId": "ITEM-10.OP03",
+            "cycleTime": 30,
+            "requiredWorkstation": "WRK3"
+         }
+      ]
+   }
+]
