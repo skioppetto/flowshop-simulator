@@ -18,6 +18,6 @@ public class OperationRequrements {
    private int operatorsAny;
    @SerializedName("requiredOperatorsGroups")
    @Expose
-   private List<OperatorRequirement> operatorsGroups;
+   private List<OperatorsGroupRequirements> operatorsGroups;
 
 }
