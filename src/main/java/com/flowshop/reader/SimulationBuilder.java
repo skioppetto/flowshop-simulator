@@ -1,6 +1,7 @@
 package com.flowshop.reader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +40,7 @@ public class SimulationBuilder {
    private void buildOrders() {
       OrderRequirements[] orderRequirements = configuration.getOrdersRequirements();
       for (OrderRequirements requirement : orderRequirements) {
-         List<Operation> operations = new ArrayList<>();
+         Operation[] operations = new Operation[requirement.getOperations().length];
          Operation nextOperation = null;
          for (int i = requirement.getOperations().length - 1; i >= 0; i--) {
             OperationRequrements opRequirement = requirement.getOperations()[i];
@@ -47,11 +48,11 @@ public class SimulationBuilder {
                   new WorkCell(opRequirement.getWorkstation()));
             Operation op = new Operation(opRequirement.getOperationId(), opRequirement.getCycleTime(), workstation,
                   nextOperation);
-            operations.add(op);
+            operations[i] = op;
             nextOperation = op;
 
          }
-         orders.add(new Order(requirement.getOrderId(), operations));
+         orders.add(new Order(requirement.getOrderId(), Arrays.asList(operations)));
       }
    }
 

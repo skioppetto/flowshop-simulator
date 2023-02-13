@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.flowshop.simulator.BufferedWorkstation;
+import com.flowshop.simulator.Order;
 import com.flowshop.simulator.Simulation;
 import com.flowshop.simulator.WorkCell;
 import com.flowshop.simulator.WorkGroup;
@@ -34,6 +36,48 @@ public class SimulationBuilderTest {
       op2.setWorkstation("wrk2");
       ord1.setOperations(new OperationRequrements[] { op1, op2 });
       return ord1;
+   }
+
+   private OrderRequirements buildComplexOrderRequirement(String orderId) {
+      OrderRequirements ord1 = new OrderRequirements();
+      ord1.setOrderId(orderId);
+      OperationRequrements op1 = new OperationRequrements();
+      OperationRequrements op2 = new OperationRequrements();
+      OperationRequrements op3 = new OperationRequrements();
+      OperationRequrements op4 = new OperationRequrements();
+      op1.setCycleTime(10);
+      op1.setOperationId(orderId + ".op1");
+      op1.setWorkstation("wrk1");
+      op2.setCycleTime(10);
+      op2.setOperationId(orderId + ".op2");
+      op2.setWorkstation("wrk2");
+      op3.setCycleTime(10);
+      op3.setOperationId(orderId + ".op3");
+      op3.setWorkstation("wrk3");
+      op4.setCycleTime(10);
+      op4.setOperationId(orderId + ".op4");
+      op4.setWorkstation("wrk4");
+      ord1.setOperations(new OperationRequrements[] { op1, op2, op3, op4 });
+      return ord1;
+   }
+
+   @Test
+   void operationsCreationTest() {
+      IConfigurationReader configMock = mock(IConfigurationReader.class);
+      expect(configMock.getWorkstationsRequirements()).andReturn(null);
+      expect(configMock.getOperatorRequirements()).andReturn(null);
+      expect(configMock.getOrdersRequirements()).andReturn(new OrderRequirements[] {
+            buildComplexOrderRequirement("firstOrder"), buildSimpleOrderRequirement("secondOrder") });
+      replay(configMock);
+      Simulation sim = (new SimulationBuilder(configMock)).build();
+      verify(configMock);
+      assertNotNull(sim);
+      Order ord1 = sim.getOrders().get(0);
+      assertEquals("firstOrder", ord1.getId());
+      assertNull(ord1.getOperations().get(3).getNextOperation());
+      assertEquals(ord1.getOperations().get(3), ord1.getOperations().get(2).getNextOperation());
+      assertEquals(ord1.getOperations().get(2), ord1.getOperations().get(1).getNextOperation());
+      assertEquals(ord1.getOperations().get(1), ord1.getOperations().get(0).getNextOperation());
    }
 
    @Test
