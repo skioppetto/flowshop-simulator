@@ -1,0 +1,9 @@
+[
+    {
+        "name": "operator1"
+    },
+    {
+        "name": "operator2",
+        "group": "users"
+    }
+]
