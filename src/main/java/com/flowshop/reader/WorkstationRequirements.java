@@ -6,8 +6,8 @@ import lombok.Data;
 public class WorkstationRequirements {
     
     private String name;
-    private Integer bufferAfter;
-    private Integer bufferBefore;
-    private Integer workGroupCells;
+    private int bufferAfter;
+    private int bufferBefore;
+    private int workGroupCells;
 
 }
