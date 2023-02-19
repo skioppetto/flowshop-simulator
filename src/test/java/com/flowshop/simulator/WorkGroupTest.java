@@ -239,7 +239,7 @@ public class WorkGroupTest {
       WorkGroup group = new WorkGroup("group", new HashSet<>(Arrays.asList(wst1, wst2)));
       Operation op1 = new Operation("operation1", 10, group, null);
       group.assignOperation(op1);
-      assertEquals(0, group.process(5));
+      assertEquals(5, group.process(5));
       assertEquals(Workstation.Status.IDLE, group.getStatus());
    }
 

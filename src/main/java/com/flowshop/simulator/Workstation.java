@@ -22,4 +22,6 @@ public abstract class Workstation extends ObservableSimObject{
    public abstract Set<Operator> assignOperators(Collection<? extends Operator> operators);
 
    public abstract Set<Operator> unassignOperators();
+
+   public abstract long evalProcess();
 }

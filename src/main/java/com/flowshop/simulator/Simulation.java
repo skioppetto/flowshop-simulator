@@ -17,6 +17,7 @@ public class Simulation implements ISimulationTimer {
    private final Set<Workstation> workstations = new HashSet<>();
    @Getter
    private final Set<Operator> availableOperators = new HashSet<>();
+   private final Set<Operator> operators = new HashSet<>();
 
    private final Set<AbstractEventsWriter> eventsWriters = new HashSet<>();
 
@@ -27,6 +28,7 @@ public class Simulation implements ISimulationTimer {
    public Simulation(List<Order> orders, Collection<? extends Operator> operators) {
       this(orders);
       this.availableOperators.addAll(operators);
+      this.operators.addAll(operators);
    }
 
    public Simulation(List<Order> orders) {
@@ -36,6 +38,10 @@ public class Simulation implements ISimulationTimer {
             workstations.add(operation.getRequiredWorkstation());
          }
       }
+   }
+
+   public Set<Operator> getOperators() {
+      return operators;
    }
 
    public void addEventsWriter(AbstractEventsWriter eventsWriter) {
@@ -81,18 +87,18 @@ public class Simulation implements ISimulationTimer {
 
    public void process(int i) {
       simulationTime += i;
+      // process all workstations
+      workstations.stream().parallel().forEach(workstation -> workstation.process(i));
+      workstations.stream().parallel().forEach(workstation -> workstation.evalBlockedStatus());
       // all operators that are not working are released from the workstation
       workstations.stream().parallel()
             .forEach(this::unassignOperators);
       // operators assigment priority to WAIT_FOR_OPERATOR workstation
       if (!this.availableOperators.isEmpty())
-         workstations.stream().parallel()
+         workstations.stream()
                .filter(workstation -> Workstation.Status.WAITING_FOR_OPERATOR
                      .equals(workstation.getStatus()))
                .forEach(this::assignOperators);
-      // process all workstations
-      workstations.stream().parallel().forEach(workstation -> workstation.process(i));
-      workstations.stream().parallel().forEach(workstation -> workstation.evalBlockedStatus());
       // try to push new operations
       for (Order order : orders) {
          Operation op = order.getNextOperation();
@@ -104,12 +110,14 @@ public class Simulation implements ISimulationTimer {
 
    // this method will work with single workstations
    private void assignOperators(Workstation workstation) {
-      this.availableOperators.removeAll(workstation.assignOperators(availableOperators));
+      Set<Operator> assignedOperators = workstation.assignOperators(availableOperators);
+      this.availableOperators.removeAll(assignedOperators);
    }
 
    // this method will work with single workstations
    private void unassignOperators(Workstation workstation) {
-      this.availableOperators.addAll(workstation.unassignOperators());
+      Set<Operator> unassignedOperators = workstation.unassignOperators();
+      this.availableOperators.addAll(unassignedOperators);
    }
 
    @Override

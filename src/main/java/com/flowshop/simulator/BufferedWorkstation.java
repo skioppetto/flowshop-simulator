@@ -73,6 +73,10 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
       return processTime;
    }
 
+   public long evalProcess() {
+      return workstation.evalProcess();
+   }
+
    public boolean evalBlockedStatus() {
       boolean eval = workstation.evalBlockedStatus();
       if (eval)

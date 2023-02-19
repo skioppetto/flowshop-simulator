@@ -44,10 +44,17 @@ public class SimulationBuilder {
          Operation nextOperation = null;
          for (int i = requirement.getOperations().length - 1; i >= 0; i--) {
             OperationRequrements opRequirement = requirement.getOperations()[i];
-            Workstation workstation = workstationsMap.getOrDefault(opRequirement.getWorkstation(),
-                  new WorkCell(opRequirement.getWorkstation()));
+            if (!workstationsMap.containsKey(opRequirement.getWorkstation()))
+               workstationsMap.put(opRequirement.getWorkstation(), new WorkCell(opRequirement.getWorkstation()));
+            Workstation workstation = workstationsMap.get(opRequirement.getWorkstation());
             Operation op = new Operation(opRequirement.getOperationId(), opRequirement.getCycleTime(), workstation,
                   nextOperation);
+            op.setRequiredOperators(opRequirement.getOperatorsAny());
+            if (null != opRequirement.getOperatorsGroups()) {
+               for (OperatorsGroupRequirements opGroup : opRequirement.getOperatorsGroups()) {
+                  op.getRequiredOperatorsGroups().put(opGroup.getGroupId(), opGroup.getRequired());
+               }
+            }
             operations[i] = op;
             nextOperation = op;
 

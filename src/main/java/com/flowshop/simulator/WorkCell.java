@@ -63,10 +63,10 @@ public class WorkCell extends Workstation {
    public Workstation.Status getStatus() {
       if (null == currentOperation)
          return Workstation.Status.IDLE;
-      if (calculateAssignedOperators() < calculateOperationRequiredOperators())
-         return Workstation.Status.WAITING_FOR_OPERATOR;
       if (currentOperation.getCycleTime() <= currentOperation.getProcessedTime())
          return Workstation.Status.BLOCKED;
+      if (calculateAssignedOperators() < calculateOperationRequiredOperators())
+         return Workstation.Status.WAITING_FOR_OPERATOR;
       return Workstation.Status.PROCESSING;
    }
 
@@ -76,6 +76,14 @@ public class WorkCell extends Workstation {
             && status != Workstation.Status.BLOCKED)
          return 0;
       return Math.min(i, currentOperation.getCycleTime() - currentOperation.getProcessedTime());
+   }
+
+   public long evalProcess() {
+      Workstation.Status status = this.getStatus();
+      if (status == Workstation.Status.PROCESSING)
+         return currentOperation.getCycleTime() - currentOperation.getProcessedTime();
+      else
+         return 0;
    }
 
    public long process(long i) {
@@ -101,6 +109,8 @@ public class WorkCell extends Workstation {
          latestOperation.setBlocked(isBlocked);
       if (isBlocked) {
          currentOperation = latestOperation;
+      } else {
+         latestOperation = null;
       }
       notifySimObjectObservers();
       return isBlocked;

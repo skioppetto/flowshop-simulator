@@ -54,9 +54,24 @@ public class WorkGroup extends Workstation implements SimObjectObserver {
       return lower;
    }
 
+   public long evalProcess() {
+      long minProcess = 0;
+      for (Workstation wrk : this.getWorkCells()) {
+         if (wrk.getStatus().equals(Workstation.Status.PROCESSING)
+               && (wrk.evalProcess() < minProcess || minProcess == 0))
+            minProcess = wrk.evalProcess();
+      }
+      return minProcess;
+   }
+
    @Override
    public long process(long i) {
-      long minProcessTime = workCells.stream().mapToLong(workCell -> workCell.evalProcess(i)).min().orElse(0);
+      long minProcessTime = 0;
+      for (WorkCell w : workCells){
+         long eval = w.evalProcess(i);
+         if (eval > 0 && (eval < minProcessTime || minProcessTime ==0))
+            minProcessTime = eval;
+      }
       for (WorkCell workCell : workCells) {
          workCell.process(minProcessTime);
       }
