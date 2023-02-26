@@ -1,6 +1,5 @@
 package com.flowshop.simulator;
 
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import lombok.Getter;
@@ -13,8 +12,8 @@ public class WorkstationBuffer extends ObservableSimObject {
 
    @Getter
    private final BufferedWorkstation workstation;
-   @Getter
-   private final Queue<Operation> queue;
+   
+   private final ArrayBlockingQueue<Operation> queue;
    @Getter
    private final Type type;
    @Getter
@@ -31,12 +30,18 @@ public class WorkstationBuffer extends ObservableSimObject {
    }
 
    public boolean enqueue(Operation op) {
-      if (maxSize == 0)
+      if (maxSize == 0 || queue.contains(op))
          return false;
       boolean enqueued = queue.offer(op);
       if (enqueued)
          notifySimObjectObservers();
       return enqueued;
+   }
+
+   public void remove(Operation op) {
+      if (maxSize > 0)
+         if (queue.removeIf(queueOp -> queueOp.equals(op)))
+            notifySimObjectObservers();
    }
 
    public Operation dequeue() {
