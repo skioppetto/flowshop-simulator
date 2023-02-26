@@ -175,9 +175,9 @@ public class WorkGroupTest {
       Operation op1 = new Operation("operation1", 10, group1, op3);
       Operation op2 = new Operation("operation2", 10, group1, op4);
       Operation op5 = new Operation("operation3", 10, group1, op6);
-      group1.assignOperation(op1);
-      group1.assignOperation(op2);
-      group1.assignOperation(op5);
+      assertTrue(group1.assignOperation(op1));
+      assertTrue(group1.assignOperation(op2));
+      assertTrue(group1.assignOperation(op5));
       group1.process(10);
       assertTrue(group1.evalBlockedStatus());
    }
