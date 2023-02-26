@@ -1,11 +1,13 @@
 package com.flowshop;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
 
 import com.flowshop.reader.ConfigurationJsonReader;
 import com.flowshop.reader.SimulationBuilder;
+import com.flowshop.simulator.BufferedWorkstation;
 import com.flowshop.simulator.Operator;
 import com.flowshop.simulator.Order;
 import com.flowshop.simulator.Simulation;
@@ -38,6 +40,7 @@ public final class App {
         SimulationBuilder builder = new SimulationBuilder(new ConfigurationJsonReader(folder));
         Simulation sim = builder.build();
         sim.addEventsWriter(new CsvFileWriter(sim, folder + File.separator + "results"));
+        FileWriter fLogger = new FileWriter(folder + File.separator + "results" + File.separator + "sim.log");
         Order lastOrder = sim.getOrders().get(sim.getOrders().size() - 1);
         sim.start();
         long lastSimulation = 0;
@@ -48,15 +51,18 @@ public final class App {
                 countHangs++;
             } else {
                 countHangs = 0;
+               fLogger.append(printSimStatus(sim));
             }
             if (countHangs >= MAX_SIMULATION_HANGS) {
+                fLogger.append(printSimStatus(sim));
                 System.out.println("SIMULATION HANGS:");
-                printSimStatus(sim);
+                System.out.println(printSimStatus(sim));
                 break;
             }
             lastSimulation = sim.getSimulationTime();
         }
         sim.stop();
+        fLogger.close();
     }
 
     private static int calculateProgress(Set<Workstation> workstations) {
@@ -69,29 +75,42 @@ public final class App {
 
     }
 
-    private static void printSimStatus(Simulation sim) {
-        System.out.println("### SIMULATION TIME: " + sim.getSimulationTime());
-        System.out.println("### WORKSTATIONS:");
+    private static String printSimStatus(Simulation sim) {
+        StringBuilder sBuilder = new StringBuilder();
+
+        sBuilder.append("### SIMULATION TIME: " + sim.getSimulationTime() + "\n");
+        sBuilder.append("### WORKSTATIONS:" + "\n");
         for (Workstation wrk : sim.getWorkstations()) {
-            System.out.println("# " + wrk.getId() + " is currently " + wrk.getStatus().toString());
-            if (wrk instanceof WorkGroup) {
-                for (WorkCell wcell : ((WorkGroup) wrk).getWorkCells()) {
-                    System.out.println("# " + wcell.getId() + " is currently " + wrk.getStatus().toString());
+            sBuilder.append("# " + wrk.getId() + " is currently " + wrk.getStatus().toString() + "\n");
+            Workstation workstation = wrk;
+            if (wrk instanceof BufferedWorkstation) {
+                BufferedWorkstation buff = (BufferedWorkstation) wrk;
+                String bufferState = "before buffer: " + buff.getBeforeBuffer().size() + "/"
+                        + buff.getBeforeBufferMaxSize() + "\tafter buffer: " + buff.getAfterBuffer().size() + "/"
+                        + buff.getAfterBufferMaxSize() + "\n";
+                workstation = buff.getWorkstation();
+                sBuilder.append(bufferState);
+            }
+            if (workstation instanceof WorkGroup) {
+                for (WorkCell wcell : ((WorkGroup) workstation).getWorkCells()) {
+                    sBuilder.append(
+                            "# " + wcell.getId() + " is currently " + workstation.getStatus().toString() + "\n");
                     if (wcell.getCurrentOperation() != null)
-                        System.out.println("\t" + cellStatus(wcell));
+                        sBuilder.append("\t" + cellStatus(wcell) + "\n");
                 }
             } else {
-                WorkCell wcell = (WorkCell) wrk;
+                WorkCell wcell = (WorkCell) workstation;
                 if (wcell.getCurrentOperation() != null)
-                    System.out.println("\t" + cellStatus(wcell));
+                    sBuilder.append("\t" + cellStatus(wcell) + "\n");
             }
         }
-        System.out.println("### OPERATORS:");
-        System.out.println("available operators: " + sim.getAvailableOperators().size());
+        sBuilder.append("### OPERATORS:" + "\n");
+        sBuilder.append("available operators: " + sim.getAvailableOperators().size() + "\n");
         for (Operator op : sim.getOperators()) {
-            System.out.println("operator " + op.getId() + ((op.getAssignedWorkstation() == null) ? " is not assigned"
-                    : " is assigned to " + op.getAssignedWorkstation().getId()));
+            sBuilder.append("operator " + op.getId() + ((op.getAssignedWorkstation() == null) ? " is not assigned"
+                    : " is assigned to " + op.getAssignedWorkstation().getId()) + "\n");
         }
+        return sBuilder.toString();
     }
 
     private static String cellStatus(WorkCell wcell) {
