@@ -22,6 +22,21 @@ public class CsvFileWriter extends AbstractEventsWriter {
       workstationFw = new FileWriter(Paths.get(pathToFolder, "workstations.csv").toFile());
       workstationBufferFw = new FileWriter(Paths.get(pathToFolder, "buffers.csv").toFile());
       operatorFw = new FileWriter(Paths.get(pathToFolder, "operators.csv").toFile());
+      headerWorkstations();
+      headerOperators();
+      headerBuffers();
+   }
+
+   private void headerBuffers() throws IOException {
+      workstationBufferFw.append("workstationId, status, statusStart, statusDuration\n");
+   }
+
+   private void headerOperators() throws IOException {
+      operatorFw.append("operatorId, groupId, status, statusStart, statusDuration, workCellId, operationId, orderId\n");
+   }
+
+   private void headerWorkstations() throws IOException {
+      workstationFw.append("workcellId, workstationId, status, statusStart, statusDuration, operationId, orderId\n");
    }
 
    void catchOperatorEvent(OperatorEvent event) {
@@ -46,7 +61,7 @@ public class CsvFileWriter extends AbstractEventsWriter {
    }
 
    void catchWorkstationEvent(WorkstationEvent event) {
-      String line = event.getWorkstationId() + ", " + event.getWorkGroupId() + ", " + event.getStatus().toString()
+      String line = event.getWorkstationId() + ", " + (event.getWorkGroupId()==null?event.getWorkstationId():event.getWorkGroupId()) + ", " + event.getStatus().toString()
             + ", " + event.getStartTime() + ", " + event.getDuration() + ", " + event.getOperationId() + ", "
             + event.getOrderId() + "\n";
       try {
