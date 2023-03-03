@@ -12,13 +12,13 @@ import com.google.gson.GsonBuilder;
 
 public class OrdersGenerator {
 
-   private static final int ORDERS_COUNT = 50;
+   private static final int ORDERS_COUNT = 10;
    private static final int ORDER_ID_LENGTH = 10;
-   private static final int OPERATIONS_COUNT = 8;
+   private static final int OPERATIONS_COUNT = 5;
    private static final long CYCLE_TIME_MIN = 10;
    private static final long CYCLE_TIME_MAX = 100;
-   private static final int OPERATORS_MIN = 0;
-   private static final int OPERATORS_MAX = 4;
+   private static final int OPERATORS_MIN = 1;
+   private static final int OPERATORS_MAX = 2;
 
    public static void main(String[] args) throws IOException {
       OrderRequirements[] orders = new OrderRequirements[ORDERS_COUNT];
