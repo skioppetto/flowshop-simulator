@@ -3,6 +3,7 @@ package com.flowshop;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Set;
 
 import com.flowshop.reader.ConfigurationJsonReader;
@@ -15,6 +16,8 @@ import com.flowshop.simulator.WorkCell;
 import com.flowshop.simulator.WorkGroup;
 import com.flowshop.simulator.Workstation;
 import com.flowshop.writer.CsvFileWriter;
+import com.flowshop.writer.TimeseriesWriter;
+import com.flowshop.writer.TimeseriesWriter.Unit;
 
 /**
  * Hello world!
@@ -40,6 +43,7 @@ public final class App {
         SimulationBuilder builder = new SimulationBuilder(new ConfigurationJsonReader(folder));
         Simulation sim = builder.build();
         sim.addEventsWriter(new CsvFileWriter(sim, folder + File.separator + "results"));
+        sim.addEventsWriter(new TimeseriesWriter(sim, folder + File.separator + "results", new Date(), Unit.SECONDS));
         FileWriter fLogger = new FileWriter(folder + File.separator + "results" + File.separator + "sim.log");
         Order lastOrder = sim.getOrders().get(sim.getOrders().size() - 1);
         sim.start();
@@ -51,7 +55,7 @@ public final class App {
                 countHangs++;
             } else {
                 countHangs = 0;
-               fLogger.append(printSimStatus(sim));
+                fLogger.append(printSimStatus(sim));
             }
             if (countHangs >= MAX_SIMULATION_HANGS) {
                 fLogger.append(printSimStatus(sim));
