@@ -2,3 +2,5 @@
 /.apt_generated_tests
 /target
 .vscode/launch.json
+/simul*
+/generator
