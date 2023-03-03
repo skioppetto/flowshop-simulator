@@ -6,4 +6,6 @@ public interface SimObjectObserver {
 
    public void onAdded(ObservableSimObject observableSimObject);
 
+   public void onEndSimulation();
+
 }

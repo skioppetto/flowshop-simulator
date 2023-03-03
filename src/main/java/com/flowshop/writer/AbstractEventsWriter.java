@@ -53,6 +53,11 @@ public abstract class AbstractEventsWriter implements Runnable {
 
     public void setStopped(boolean b) {
         this.stopped = true;
+        // TODO: il modo migliore sarebbe rendere l'ObserverSimObject una classe astratta, in fase di creazione passare una simulazione, aggiugerlo ad un set di observers gestito dalla simulazione e al termine 
+        // dovrebbe essere la simulazione a notificare tutti gli observers.
+        workstationListener.onEndSimulation();
+        operatorListener.onEndSimulation();
+        bufferListener.onEndSimulation();
      }
 
     abstract void catchOperatorEvent(OperatorEvent event);

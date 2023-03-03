@@ -76,4 +76,17 @@ public class WorkstationListener implements SimObjectObserver {
          }
       }
    }
+
+   @Override
+   public void onEndSimulation(){
+      long simulationTime = timer.getSimulationTime();
+      for (WorkstationEvent event : runningEvents.values()){
+         long duration = simulationTime - event.getStartTime();
+            if (duration > 0) {
+               event.setDuration(duration);
+               queue.add(event);
+            }
+      }
+      runningEvents.clear();
+   }
 }

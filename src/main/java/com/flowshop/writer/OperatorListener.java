@@ -55,4 +55,18 @@ public class OperatorListener implements SimObjectObserver {
       running.setStartTime(timer.getSimulationTime());
       runningEvents.put(operator, running);
    }
+
+   @Override
+   public void onEndSimulation() {
+      long simulationTime = timer.getSimulationTime();
+      for (OperatorEvent event : runningEvents.values()) {
+         long duration = simulationTime - event.getStartTime();
+         if (duration > 0) {
+            event.setDuration(duration);
+            queue.add(event);
+         }
+      }
+      runningEvents.clear();
+   }
+
 }
