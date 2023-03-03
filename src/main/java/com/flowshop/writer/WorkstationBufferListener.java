@@ -59,4 +59,9 @@ public class WorkstationBufferListener implements SimObjectObserver {
       return buffer.getWorkstation().getId() + buffer.getType().toString();
    }
 
+   @Override
+   public void onEndSimulation() {
+      runningEvents.clear();
+   }
+
 }

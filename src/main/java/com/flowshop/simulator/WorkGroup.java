@@ -67,9 +67,9 @@ public class WorkGroup extends Workstation implements SimObjectObserver {
    @Override
    public long process(long i) {
       long minProcessTime = 0;
-      for (WorkCell w : workCells){
+      for (WorkCell w : workCells) {
          long eval = w.evalProcess(i);
-         if (eval > 0 && (eval < minProcessTime || minProcessTime ==0))
+         if (eval > 0 && (eval < minProcessTime || minProcessTime == 0))
             minProcessTime = eval;
       }
       for (WorkCell workCell : workCells) {
@@ -160,6 +160,12 @@ public class WorkGroup extends Workstation implements SimObjectObserver {
 
    @Override
    public void onAdded(ObservableSimObject observableSimObject) {
+   }
+
+   @Override
+   public void onEndSimulation() {
+      // TODO Auto-generated method stub
+
    }
 
 }

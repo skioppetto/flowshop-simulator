@@ -134,4 +134,11 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
 
    }
 
+   @Override
+   public void onEndSimulation() {
+      // TODO Auto-generated method stub
+      
+   }
+
+   
 }
