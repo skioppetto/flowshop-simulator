@@ -1,0 +1,8 @@
+{
+   "ordersCount": 10,
+   "operationsCount": 5,
+   "cycleTimeMin": 10,
+   "cycleTimeMax": 100,
+   "operatorsMin": 1,
+   "operatorsMax": 2
+}
