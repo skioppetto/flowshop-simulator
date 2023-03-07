@@ -5,16 +5,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import com.flowshop.simulator.Simulation;
-
-public class CsvFileWriter extends AbstractEventsWriter {
+public class CsvFileWriter extends AbstractEventsWrapper {
 
    private final FileWriter workstationFw;
    private final FileWriter workstationBufferFw;
    private final FileWriter operatorFw;
 
-   public CsvFileWriter(Simulation simulation, String pathToFolder) throws IOException {
-      super(simulation);
+   public CsvFileWriter(String pathToFolder) throws IOException {
       Files.createDirectories(Paths.get(pathToFolder));
       Files.deleteIfExists(Paths.get(pathToFolder, "workstations.csv"));
       Files.deleteIfExists(Paths.get(pathToFolder, "operators.csv"));

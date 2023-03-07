@@ -60,7 +60,7 @@ public class WorkstationBufferListener implements SimObjectObserver {
    }
 
    @Override
-   public void onEndSimulation() {
+   public void onStopSimulation() {
       runningEvents.clear();
    }
 

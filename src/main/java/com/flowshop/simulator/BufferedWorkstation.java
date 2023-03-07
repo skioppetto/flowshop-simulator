@@ -135,7 +135,7 @@ public class BufferedWorkstation extends Workstation implements SimObjectObserve
    }
 
    @Override
-   public void onEndSimulation() {
+   public void onStopSimulation() {
       // TODO Auto-generated method stub
       
    }

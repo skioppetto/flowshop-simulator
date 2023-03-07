@@ -78,7 +78,7 @@ public class WorkstationListener implements SimObjectObserver {
    }
 
    @Override
-   public void onEndSimulation(){
+   public void onStopSimulation(){
       long simulationTime = timer.getSimulationTime();
       for (WorkstationEvent event : runningEvents.values()){
          long duration = simulationTime - event.getStartTime();

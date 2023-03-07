@@ -15,14 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.flowshop.simulator.Simulation;
-
-public class TimeseriesWriter extends AbstractEventsWriter {
+public class TimeseriesWriter extends AbstractEventsWrapper {
 
    private final FileWriter timeseriesFw;
    private long millisStart;
-   // private List<TimeseriesEvent> events = new ArrayList<>();
-   // private Set<Long> timestamps = new HashSet<>();
    private Set<String> series = new HashSet<>();
    private Map<Long, Set<TimeseriesEvent>> eventsMap = new HashMap<>();
    private final Unit unit;
@@ -49,8 +45,7 @@ public class TimeseriesWriter extends AbstractEventsWriter {
 
    }
 
-   public TimeseriesWriter(Simulation simulation, String pathToFolder, Date start, Unit unit) throws IOException {
-      super(simulation);
+   public TimeseriesWriter(String pathToFolder, Date start, Unit unit) throws IOException {
       Files.createDirectories(Paths.get(pathToFolder));
       Files.deleteIfExists(Paths.get(pathToFolder, "timeseries.csv"));
       timeseriesFw = new FileWriter(Paths.get(pathToFolder, "timeseries.csv").toFile());

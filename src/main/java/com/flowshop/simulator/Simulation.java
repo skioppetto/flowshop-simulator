@@ -4,8 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.flowshop.writer.AbstractEventsWriter;
+import java.util.function.BiConsumer;
 
 import lombok.Getter;
 
@@ -19,11 +18,9 @@ public class Simulation implements ISimulationTimer {
    private final Set<Operator> availableOperators = new HashSet<>();
    private final Set<Operator> operators = new HashSet<>();
 
-   private final Set<AbstractEventsWriter> eventsWriters = new HashSet<>();
-
-   private final Set<Thread> writingThreads = new HashSet<>();
-
    private long simulationTime = 0;
+
+   private Set<SimObserver> simulationObservers = new HashSet<>();
 
    public Simulation(List<Order> orders, Collection<? extends Operator> operators) {
       this(orders);
@@ -44,48 +41,16 @@ public class Simulation implements ISimulationTimer {
       return operators;
    }
 
-   public void addEventsWriter(AbstractEventsWriter eventsWriter) {
-      this.eventsWriters.add(eventsWriter);
-   }
-
    public void start() {
-      startWritingThreads();
-      for (Order order : orders) {
-         Operation firstOperation = order.getOperations().get(0);
-         Workstation workstation = firstOperation.getRequiredWorkstation();
-         if (workstation.assignOperation(firstOperation)) {
-            assignOperators(workstation);
-         }
-      }
+      notifySimulationObservers(SimObserver::onStartSimulation);
    }
 
-   public void stop(){
-      stopWritingThreads();   
-   }
-
-   private void startWritingThreads() {
-      for (AbstractEventsWriter eWriter : eventsWriters) {
-         Thread writerThread = new Thread(eWriter);
-         writerThread.start();
-         writingThreads.add(writerThread);
-      }
-   }
-
-   private void stopWritingThreads() {
-      for (AbstractEventsWriter eWriter : eventsWriters) {
-         eWriter.setStopped(true);
-      }
-      for (Thread writingThread : writingThreads) {
-         try {
-            writingThread.join(10);
-            writingThread.interrupt();
-         } catch (InterruptedException e) {
-            e.printStackTrace();
-         }
-      }
+   public void stop() {
+      notifySimulationObservers(SimObserver::onStopSimulation);
    }
 
    public void process(int i) {
+      notifySimulationObservers(SimObserver::onProcessStart);
       simulationTime += i;
       // process all workstations
       workstations.stream().parallel().forEach(workstation -> workstation.process(i));
@@ -106,6 +71,7 @@ public class Simulation implements ISimulationTimer {
             assignOperators(op.getRequiredWorkstation());
          }
       }
+      notifySimulationObservers(SimObserver::onProcessEnd);
    }
 
    // this method will work with single workstations
@@ -123,6 +89,16 @@ public class Simulation implements ISimulationTimer {
    @Override
    public long getSimulationTime() {
       return simulationTime;
+   }
+
+   public void addSimulationObserver(SimObserver observer) {
+      this.simulationObservers.add(observer);
+   }
+
+   private void notifySimulationObservers(BiConsumer<SimObserver, Simulation> method){
+      for (SimObserver observer : simulationObservers) {
+         method.accept(observer, this);         
+      }
    }
 
 }

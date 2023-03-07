@@ -163,7 +163,7 @@ public class WorkGroup extends Workstation implements SimObjectObserver {
    }
 
    @Override
-   public void onEndSimulation() {
+   public void onStopSimulation() {
       // TODO Auto-generated method stub
 
    }
